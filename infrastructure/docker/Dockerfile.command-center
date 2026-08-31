@@ -1,0 +1,21 @@
+FROM node:22-alpine
+RUN npm install -g pnpm@9
+WORKDIR /app
+
+COPY pnpm-workspace.yaml package.json ./
+COPY apps/command-center/package.json ./apps/command-center/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/domain/package.json ./packages/domain/
+
+RUN pnpm install --frozen-lockfile
+
+COPY tsconfig.base.json ./
+COPY packages/ ./packages/
+COPY apps/command-center/ ./apps/command-center/
+
+RUN pnpm --filter @hutchrok-os/shared build && \
+    pnpm --filter @hutchrok-os/domain build && \
+    pnpm --filter @hutchrok-os/command-center build
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@hutchrok-os/command-center", "start"]

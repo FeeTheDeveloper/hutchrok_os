@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  # ─────────────────────────────────────────
+  # PostgreSQL
+  # ─────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: hutchrok-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hutchrok
+      POSTGRES_PASSWORD: hutchrok_dev
+      POSTGRES_DB: hutchrok_os
+    ports:
+      - '5432:5432'
+    volumes:
+      - hutchrok_db_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hutchrok -d hutchrok_os']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # API Server
+  # ─────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: ./infrastructure/docker/Dockerfile.api
+    container_name: hutchrok-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      APP_ENV: local
+      DATABASE_URL: ******db:5432/hutchrok_os
+      API_PORT: 3001
+    env_file:
+      - .env.local
+    ports:
+      - '3001:3001'
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/src:/app/apps/api/src:ro
+      - ./packages:/app/packages:ro
+
+  # ─────────────────────────────────────────
+  # Command Center (optional for local dev)
+  # ─────────────────────────────────────────
+  command-center:
+    build:
+      context: .
+      dockerfile: ./infrastructure/docker/Dockerfile.command-center
+    container_name: hutchrok-command-center
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    env_file:
+      - .env.local
+    ports:
+      - '3000:3000'
+    depends_on:
+      - api
+
+volumes:
+  hutchrok_db_data:
