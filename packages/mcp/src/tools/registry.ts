@@ -46,6 +46,11 @@ export class MCPToolRegistry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register<TInput extends z.ZodType, TOutput>(tool: MCPToolDefinition<TInput, TOutput>): void {
     const fullName = `${tool.namespace}.${tool.name}`;
+    if (this.tools.has(fullName)) {
+      throw new Error(
+        `MCP tool registration collision: "${fullName}" is already registered. Each namespace.name must be unique.`
+      );
+    }
     this.tools.set(fullName, tool);
   }
 
@@ -54,9 +59,10 @@ export class MCPToolRegistry {
     return this.tools.get(fullName);
   }
 
-  listTools(): Array<{ name: string; description: string; namespace: string }> {
+  listTools(): Array<{ fullName: string; description: string; namespace: string; name: string }> {
     return [...this.tools.values()].map((t) => ({
-      name: `${t.namespace}.${t.name}`,
+      fullName: `${t.namespace}.${t.name}`,
+      name: t.name,
       description: t.description,
       namespace: t.namespace,
     }));

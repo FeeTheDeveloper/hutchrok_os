@@ -35,14 +35,14 @@ export function validateKernel(kernel: CompanyKernel): void {
 }
 
 export function isCapabilityEnabled(
-  kernel: CompanyKernel,
-  capabilityId: string
+  _kernel: CompanyKernel,
+  _capabilityId: string
 ): boolean {
-  // Capabilities are resolved from the manifest, not the kernel directly.
-  // This helper is provided for consistent API.
-  void kernel;
-  void capabilityId;
-  return true; // Delegate to capability manifest in production
+  // TODO: Implement by loading the capability manifest and checking the enabled flag.
+  // Do not call this function until implemented — it is not yet wired to the manifest.
+  throw new Error(
+    'isCapabilityEnabled is not yet implemented. Load the capability manifest and check the enabled field directly.'
+  );
 }
 
 export function getApprovalLevel(

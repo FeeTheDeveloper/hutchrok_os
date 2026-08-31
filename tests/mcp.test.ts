@@ -20,6 +20,15 @@ describe('MCP Tool Registry', () => {
     }
     const tools = registry.listTools();
     expect(tools.length).toBe(ALL_MCP_TOOLS.length);
+    // All fullNames must be unique
+    const fullNames = tools.map((t) => t.fullName);
+    expect(new Set(fullNames).size).toBe(fullNames.length);
+  });
+
+  it('throws on duplicate registration', () => {
+    const registry = new MCPToolRegistry();
+    registry.register(ALL_MCP_TOOLS[0]!);
+    expect(() => registry.register(ALL_MCP_TOOLS[0]!)).toThrow('registration collision');
   });
 
   it('resolves tools by full name', () => {
