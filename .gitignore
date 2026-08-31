@@ -1,0 +1,48 @@
+# Hutchrok OS — Git Ignore
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Node
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Database
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+
+# Tests
+/test-results/
+/playwright-report/
+
+# Docker
+docker-compose.override.yml
