@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/api",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Core API server (Hono / Node.js)",
+  "description": "Hutchrok OS \u2014 Core API server (Hono / Node.js)",
+  "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -27,6 +28,8 @@
     "@hutchrok-os/agents": "workspace:*",
     "@hutchrok-os/mcp": "workspace:*",
     "@hutchrok-os/connectors": "workspace:*",
+    "@hutchrok-os/autopilot": "workspace:*",
+    "@hutchrok-os/config": "workspace:*",
     "hono": "^4.5.0",
     "@hono/node-server": "^1.13.0",
     "drizzle-orm": "^0.33.0",

@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/knowledge",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — knowledge package",
+  "description": "Hutchrok OS \u2014 knowledge package",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

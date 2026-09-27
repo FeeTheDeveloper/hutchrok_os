@@ -162,7 +162,7 @@ export class AgentRuntime {
     return {
       allowed: decision.allowed,
       requiresApproval: decision.requiresApproval ?? false,
-      approvalLevel: decision.approvalLevel,
+      ...(decision.approvalLevel ? { approvalLevel: decision.approvalLevel } : {}),
       reason: decision.reason,
     };
   }

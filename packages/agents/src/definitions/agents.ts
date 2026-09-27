@@ -1,7 +1,7 @@
 /**
  * Hutchrok OS — Agent Definitions
  *
- * 14 defined agents for Hutchrok Solutions Group LLC.
+ * 15 defined agents for Hutchrok Solutions Group LLC.
  * Each agent definition is explicit, bounded, and auditable.
  */
 
@@ -343,6 +343,39 @@ export const claudeEngineeringAgent: AgentDefinition = {
   approvalLevel: 'C',
 };
 
+export const siteAutopilotAgent: AgentDefinition = {
+  id: 'site-autopilot',
+  name: 'Site Autopilot',
+  role: 'AI_AGENT',
+  purpose:
+    'The autonomous beat that runs hutchrok.com: ingests every site action and every email to the OS mailbox, acknowledges customers, routes work to the owning agent, drafts replies for human approval, and escalates missed SLAs.',
+  permissions: [
+    'read:site_signals', 'read:os_mailbox', 'send:routine_email', 'create:task',
+    'draft:email_reply', 'request:approval', 'write:audit',
+  ],
+  accessibleTools: ['communications.get_unanswered', 'communications.send_email', 'customers.search', 'knowledge.search'],
+  accessibleData: ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL'],
+  escalationRules: [
+    { condition: 'substantive_reply', escalateTo: 'human_review', approvalLevel: 'C' },
+    { condition: 'restricted_data_received', escalateTo: 'human_review', approvalLevel: 'C' },
+    { condition: 'filing_ready_for_submission', escalateTo: 'filing', approvalLevel: 'C' },
+    { condition: 'payment_or_refund', escalateTo: 'finance' },
+  ],
+  modelProfile: 'fast_conversation',
+  autonomyLevel: 'SEMI_AUTONOMOUS',
+  prohibitedActions: [
+    'send_ai_reply_without_approval', 'submit_filing', 'process_payment', 'issue_refund',
+    'access_ssn', 'send_restricted_data_to_model', 'reply_to_automated_mail',
+  ],
+  loggingRequirements: [
+    { event: 'signal_received', required: true },
+    { event: 'email_received', required: true },
+    { event: 'email_sent', required: true, includePayload: true },
+    { event: 'approval_requested', required: true, includePayload: true },
+  ],
+  approvalLevel: 'B',
+};
+
 // ─────────────────────────────────────────
 // AGENT REGISTRY
 // ─────────────────────────────────────────
@@ -362,6 +395,7 @@ export const AGENT_DEFINITIONS = [
   financeAgent,
   knowledgeAgent,
   claudeEngineeringAgent,
+  siteAutopilotAgent,
 ] as const;
 
 export function getAgentDefinition(agentId: string) {

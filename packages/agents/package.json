@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/agents",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Agent runtime and definitions",
+  "description": "Hutchrok OS \u2014 Agent runtime and definitions",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

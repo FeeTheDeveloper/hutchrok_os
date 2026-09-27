@@ -11,10 +11,14 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { loadKernel } from '@hutchrok-os/kernel';
-import { hutchrokKernel } from '../../../config/business/hutchrok.kernel.js';
+import { hutchrokKernel } from '@hutchrok-os/config/kernel';
 import { healthRouter } from './routes/health.js';
 import { eventsRouter } from './routes/events.js';
 import { webhooksRouter } from './webhooks/index.js';
+import { emailWebhooksRouter } from './webhooks/email.js';
+import { siteRouter } from './routes/site.js';
+import { autopilotRouter } from './routes/autopilot.js';
+import { startBeat } from './autopilot.js';
 
 // ─────────────────────────────────────────
 // Bootstrap Company Kernel
@@ -37,6 +41,9 @@ app.use('/api/*', cors({
 // ─────────────────────────────────────────
 app.route('/health', healthRouter);
 app.route('/api/v1/events', eventsRouter);
+app.route('/api/v1/site', siteRouter);
+app.route('/api/v1/autopilot', autopilotRouter);
+app.route('/webhooks/email', emailWebhooksRouter);
 app.route('/webhooks', webhooksRouter);
 
 // 404
@@ -56,6 +63,7 @@ const port = parseInt(process.env['API_PORT'] ?? '3001', 10);
 serve({ fetch: app.fetch, port }, () => {
   console.log(`[Hutchrok OS API] Running on port ${port}`);
   console.log(`[Hutchrok OS API] Environment: ${process.env['APP_ENV'] ?? 'local'}`);
+  startBeat();
 });
 
 export { app };

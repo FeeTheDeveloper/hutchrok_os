@@ -31,7 +31,7 @@ export interface AgentDefinition {
 export interface EscalationRule {
   condition: string;
   escalateTo: string;
-  approvalLevel?: 'C' | 'D';
+  approvalLevel?: 'B' | 'C' | 'D';
 }
 
 export interface LoggingRequirement {

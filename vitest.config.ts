@@ -15,6 +15,7 @@ export default defineConfig({
       '@hutchrok-os/agents': resolve(__dirname, 'packages/agents/src/index.ts'),
       '@hutchrok-os/mcp': resolve(__dirname, 'packages/mcp/src/index.ts'),
       '@hutchrok-os/connectors': resolve(__dirname, 'packages/connectors/src/index.ts'),
+      '@hutchrok-os/autopilot': resolve(__dirname, 'packages/autopilot/src/index.ts'),
     },
   },
   test: {

@@ -111,12 +111,12 @@ export interface ActionPolicyContext {
   actorRole: Role;
   actorType: 'USER' | 'AGENT';
   action: string;
-  isExternal?: boolean;
-  isFinancial?: boolean;
-  isFiling?: boolean;
-  isCommunication?: boolean;
-  isDestructive?: boolean;
-  isProductionDeployment?: boolean;
+  isExternal?: boolean | undefined;
+  isFinancial?: boolean | undefined;
+  isFiling?: boolean | undefined;
+  isCommunication?: boolean | undefined;
+  isDestructive?: boolean | undefined;
+  isProductionDeployment?: boolean | undefined;
 }
 
 export function evaluateActionPolicy(context: ActionPolicyContext): PolicyDecision {

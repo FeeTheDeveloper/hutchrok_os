@@ -512,3 +512,105 @@ export const governmentOpportunities = pgTable('government_opportunities', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ─────────────────────────────────────────
+// SITE AUTOPILOT — hutchrok.com signals + OS mailbox
+// Backing tables for packages/autopilot (AutopilotStore).
+// Message bodies are stored with RESTRICTED data redacted.
+// ─────────────────────────────────────────
+
+export const siteSignals = pgTable('site_signals', {
+  id: uuid('id').primaryKey(),
+  signalId: text('signal_id').notNull().unique(),
+  signalType: text('signal_type').notNull(),
+  source: text('source').notNull().default('hutchrok.com'),
+  entityType: text('entity_type'),
+  entityId: text('entity_id'),
+  entityRef: text('entity_ref'),
+  eventId: uuid('event_id'),
+  correlationId: text('correlation_id'),
+  payload: jsonb('payload').notNull().default({}),
+  occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const emailThreads = pgTable('email_threads', {
+  id: uuid('id').primaryKey(),
+  ref: text('ref').notNull().unique(),
+  contactEmail: text('contact_email').notNull(),
+  contactName: text('contact_name'),
+  subject: text('subject').notNull(),
+  subjectKey: text('subject_key').notNull(),
+  intent: text('intent').notNull(),
+  sensitivity: dataClassificationEnum('sensitivity').notNull().default('INTERNAL'),
+  status: text('status').notNull().default('awaiting_team'),
+  source: text('source').notNull(),
+  signalId: text('signal_id'),
+  lastInboundAt: timestamp('last_inbound_at', { withTimezone: true }),
+  lastOutboundAt: timestamp('last_outbound_at', { withTimezone: true }),
+  followUpsSent: integer('follow_ups_sent').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const emailMessages = pgTable('email_messages', {
+  id: uuid('id').primaryKey(),
+  threadId: uuid('thread_id').notNull().references(() => emailThreads.id),
+  direction: messageDirectionEnum('direction').notNull(),
+  kind: text('kind'),
+  fromAddress: text('from_address').notNull(),
+  toAddresses: jsonb('to_addresses').notNull().default([]),
+  subject: text('subject').notNull(),
+  textRedacted: text('text_redacted').notNull(),
+  internetMessageId: text('internet_message_id').unique(),
+  providerMessageId: text('provider_message_id'),
+  sentAt: timestamp('sent_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const emailDrafts = pgTable('email_drafts', {
+  id: uuid('id').primaryKey(),
+  threadId: uuid('thread_id').references(() => emailThreads.id),
+  kind: text('kind').notNull(),
+  toAddresses: jsonb('to_addresses').notNull().default([]),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+  inReplyTo: text('in_reply_to'),
+  references: jsonb('references').notNull().default([]),
+  approvalId: uuid('approval_id').references(() => approvals.id),
+  status: text('status').notNull(),
+  generatedBy: text('generated_by').notNull(),
+  providerMessageId: text('provider_message_id'),
+  error: text('error'),
+  correlationId: text('correlation_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const autopilotTasks = pgTable('autopilot_tasks', {
+  id: uuid('id').primaryKey(),
+  queue: text('queue').notNull(),
+  title: text('title').notNull(),
+  agentId: text('agent_id').notNull(),
+  status: text('status').notNull().default('open'),
+  threadId: uuid('thread_id').references(() => emailThreads.id),
+  signalId: text('signal_id'),
+  dueAt: timestamp('due_at', { withTimezone: true }).notNull(),
+  escalatedAt: timestamp('escalated_at', { withTimezone: true }),
+  correlationId: text('correlation_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Per-contact mailbox state: consent (suppression) and ack cooldown. */
+export const emailContacts = pgTable('email_contacts', {
+  id: uuid('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  suppressed: boolean('suppressed').notNull().default(false),
+  suppressedReason: text('suppressed_reason'),
+  lastAcknowledgedAt: timestamp('last_acknowledged_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});

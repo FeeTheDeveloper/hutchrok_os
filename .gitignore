@@ -46,3 +46,4 @@ pnpm-debug.log*
 
 # Docker
 docker-compose.override.yml
+next-env.d.ts

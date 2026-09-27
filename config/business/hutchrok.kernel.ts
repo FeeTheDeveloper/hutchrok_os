@@ -263,7 +263,19 @@ export const hutchrokKernel: CompanyKernel = {
     website: {
       enabled: true,
       domain: 'hutchrok.com',
+      repository: 'FeeTheDeveloper/hutchrok_solutions-site',
+      ingestionEndpoint: '/api/v1/site/signals',
       ingestionSecretEnvRef: 'WEBSITE_INGESTION_SECRET',
+    },
+    osMailbox: {
+      enabled: true,
+      address: 'repo_addy@hutchrok.com',
+      addressEnvRef: 'OS_MAILBOX_ADDRESS',
+      outboundProvider: 'resend',
+      outboundApiKeyEnvRef: 'RESEND_API_KEY',
+      inbound: ['resend:/webhooks/email/resend', 'gmail-apps-script:/webhooks/email/inbound'],
+      teamInbox: 'contact@hutchrok.com',
+      autoSend: 'templated acknowledgments and follow-ups only (Level B); replies require Level C',
     },
     higgsfield: {
       enabled: false,

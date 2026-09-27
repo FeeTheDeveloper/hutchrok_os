@@ -1,0 +1,33 @@
+{
+  "name": "@hutchrok-os/config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hutchrok OS \u2014 Company kernel, capability manifest, and model routing configuration",
+  "type": "module",
+  "exports": {
+    "./kernel": {
+      "import": "./dist/business/hutchrok.kernel.js",
+      "types": "./dist/business/hutchrok.kernel.d.ts"
+    },
+    "./capabilities": {
+      "import": "./dist/capabilities/manifest.js",
+      "types": "./dist/capabilities/manifest.d.ts"
+    },
+    "./model-routing": {
+      "import": "./dist/model-routing/routing.js",
+      "types": "./dist/model-routing/routing.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hutchrok-os/kernel": "workspace:*",
+    "@hutchrok-os/ai": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

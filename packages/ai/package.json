@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/ai",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Provider-neutral AI gateway and model router",
+  "description": "Hutchrok OS \u2014 Provider-neutral AI gateway and model router",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -20,6 +21,8 @@
   "dependencies": {
     "@hutchrok-os/shared": "workspace:*",
     "@hutchrok-os/kernel": "workspace:*",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "openai": "^4.77.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {

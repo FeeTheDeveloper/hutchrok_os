@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/connectors",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Provider-neutral connector interfaces and adapters",
+  "description": "Hutchrok OS \u2014 Provider-neutral connector interfaces and adapters",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
