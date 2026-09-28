@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/events",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS event system — normalized event envelopes, taxonomy, and processing",
+  "description": "Hutchrok OS event system \u2014 normalized event envelopes, taxonomy, and processing",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

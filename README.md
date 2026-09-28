@@ -86,7 +86,8 @@ hutchrok-os/
 │   ├── learning/          — Learning pipeline
 │   ├── analytics/         — Analytics layer
 │   ├── mcp/               — MCP server and tool definitions
-│   ├── connectors/        — Provider-neutral connector interfaces
+│   ├── connectors/        — Provider-neutral connector interfaces (incl. OS mailbox email)
+│   ├── autopilot/         — Site Autopilot: hutchrok.com signals + OS mailbox + the beat
 │   └── shared/            — Shared utilities
 │
 ├── config/
@@ -105,6 +106,17 @@ hutchrok-os/
 ├── docs/                  — Architecture and operational documentation
 └── tests/                 — Root test suite
 ```
+
+---
+
+## Site Autopilot — Hutchrok OS runs hutchrok.com
+
+Hutchrok OS is the autonomous beat behind **hutchrok.com**. Every site action (contact, lead, filing intake,
+service request, federal intake, case lifecycle, uploads, Stripe payments) arrives as a signed signal, and
+every email to the OS mailbox **repo_addy@hutchrok.com** arrives via Resend or a Gmail forwarder. The
+`@hutchrok-os/autopilot` package classifies each one, acknowledges the customer, routes work to the owning
+agent, drafts replies for **Level C** human approval, and escalates missed SLAs on a recurring beat, with
+every step audited. See **[docs/SITE_AUTOPILOT.md](docs/SITE_AUTOPILOT.md)**.
 
 ---
 

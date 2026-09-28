@@ -3,7 +3,8 @@ RUN npm install -g pnpm@9
 WORKDIR /app
 
 # Install dependencies
-COPY pnpm-workspace.yaml package.json ./
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY config/package.json ./config/
 COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/kernel/package.json ./packages/kernel/
@@ -16,6 +17,7 @@ COPY packages/ai/package.json ./packages/ai/
 COPY packages/agents/package.json ./packages/agents/
 COPY packages/mcp/package.json ./packages/mcp/
 COPY packages/connectors/package.json ./packages/connectors/
+COPY packages/autopilot/package.json ./packages/autopilot/
 
 RUN pnpm install --frozen-lockfile
 
@@ -37,6 +39,8 @@ RUN pnpm --filter @hutchrok-os/shared build && \
     pnpm --filter @hutchrok-os/agents build && \
     pnpm --filter @hutchrok-os/mcp build && \
     pnpm --filter @hutchrok-os/connectors build && \
+    pnpm --filter @hutchrok-os/autopilot build && \
+    pnpm --filter @hutchrok-os/config build && \
     pnpm --filter @hutchrok-os/api build
 
 EXPOSE 3001

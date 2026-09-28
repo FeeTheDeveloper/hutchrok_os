@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/audit",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Append-oriented audit logging",
+  "description": "Hutchrok OS \u2014 Append-oriented audit logging",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

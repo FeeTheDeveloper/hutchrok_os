@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/mcp",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — MCP Server with strongly-typed tool schemas",
+  "description": "Hutchrok OS \u2014 MCP Server with strongly-typed tool schemas",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

@@ -39,17 +39,17 @@ export interface CreateAuditRecordOptions {
   actor: string;
   actorType: AuditLog['actorType'];
   actionType: string;
-  entityType?: string;
-  entityId?: string;
-  before?: Record<string, unknown>;
-  after?: Record<string, unknown>;
+  entityType?: string | undefined;
+  entityId?: string | undefined;
+  before?: Record<string, unknown> | undefined;
+  after?: Record<string, unknown> | undefined;
   result: AuditLog['result'];
-  errorMessage?: string;
-  correlationId?: string;
-  causationId?: string;
-  source?: string;
-  ipAddress?: string;
-  metadata?: Record<string, unknown>;
+  errorMessage?: string | undefined;
+  correlationId?: string | undefined;
+  causationId?: string | undefined;
+  source?: string | undefined;
+  ipAddress?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
 }
 
 export class AuditService {

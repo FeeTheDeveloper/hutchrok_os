@@ -43,7 +43,7 @@ export class AnthropicProvider implements AIProvider {
     const response = await client.messages.create({
       model: 'claude-opus-4-5',
       max_tokens: req.maxTokens ?? 4096,
-      system: req.systemPrompt,
+      ...(req.systemPrompt ? { system: req.systemPrompt } : {}),
       messages: [{ role: 'user', content: userContent }],
     });
 

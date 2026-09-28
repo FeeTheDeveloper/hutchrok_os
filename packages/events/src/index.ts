@@ -86,6 +86,27 @@ export const EVENT_TYPES = [
   'call.completed',
   'voicemail.received',
 
+  // Email (OS mailbox)
+  'email.received',
+  'email.sent',
+  'email.reply_drafted',
+  'email.reply_approved',
+  'email.reply_rejected',
+  'email.suppressed',
+
+  // Site (hutchrok.com signals)
+  'site.contact.submitted',
+  'site.service_request.submitted',
+  'site.federal_intake.submitted',
+  'site.case.status_changed',
+  'site.case.event',
+  'site.membership.activated',
+  'site.account.created',
+
+  // Autopilot beat
+  'autopilot.beat.tick',
+  'autopilot.task.escalated',
+
   // Appointment
   'appointment.created',
   'appointment.cancelled',

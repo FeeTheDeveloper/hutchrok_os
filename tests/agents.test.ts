@@ -6,14 +6,15 @@ import { describe, it, expect } from 'vitest';
 import { AGENT_DEFINITIONS, getAgentDefinition } from '../packages/agents/src/index.js';
 
 describe('Agent Definitions', () => {
-  it('has all 14 defined agents', () => {
-    expect(AGENT_DEFINITIONS.length).toBe(14);
+  it('has all 15 defined agents', () => {
+    expect(AGENT_DEFINITIONS.length).toBe(15);
   });
 
   it('resolves agents by ID', () => {
     expect(getAgentDefinition('hutchrok-executive')).not.toBeNull();
     expect(getAgentDefinition('filing')).not.toBeNull();
     expect(getAgentDefinition('claude-engineering')).not.toBeNull();
+    expect(getAgentDefinition('site-autopilot')).not.toBeNull();
     expect(getAgentDefinition('unknown-agent')).toBeNull();
   });
 

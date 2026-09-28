@@ -166,3 +166,9 @@ export class MockCommunicationsConnector implements CommunicationsConnector {
     return { text: '[MOCK TRANSCRIPTION]', confidence: 1.0, durationSeconds: 0 };
   }
 }
+
+// ─────────────────────────────────────────
+// EMAIL CONNECTOR (OS mailbox)
+// ─────────────────────────────────────────
+
+export * from './email.js';

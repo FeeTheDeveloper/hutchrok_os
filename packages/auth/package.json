@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/auth",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — auth package",
+  "description": "Hutchrok OS \u2014 auth package",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

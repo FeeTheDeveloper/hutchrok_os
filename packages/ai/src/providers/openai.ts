@@ -53,8 +53,8 @@ export class OpenAIProvider implements AIProvider {
     const response = await client.chat.completions.create({
       model: 'gpt-4o',
       messages,
-      max_tokens: req.maxTokens,
-      temperature: req.temperature,
+      ...(req.maxTokens !== undefined ? { max_tokens: req.maxTokens } : {}),
+      ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
     });
 
     const choice = response.choices[0];
@@ -122,7 +122,7 @@ export class OpenAIProvider implements AIProvider {
     });
 
     return {
-      urls: response.data.map((d) => d.url ?? '').filter(Boolean),
+      urls: (response.data ?? []).map((d) => d.url ?? '').filter(Boolean),
       providerId: 'openai',
       modelId: 'dall-e-3',
       correlationId: req.correlationId,

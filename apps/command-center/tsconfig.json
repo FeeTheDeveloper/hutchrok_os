@@ -1,10 +1,24 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "jsx": "preserve",
-    "outDir": "./.next",
-    "rootDir": "./src"
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
-  "include": ["src", "next.config.ts"]
+  "include": [
+    "next.config.ts",
+    "src",
+    ".next/types/**/*.ts"
+  ]
 }

@@ -2,7 +2,8 @@
   "name": "@hutchrok-os/approvals",
   "version": "1.0.0",
   "private": true,
-  "description": "Hutchrok OS — Approval system (Levels A–D)",
+  "description": "Hutchrok OS \u2014 Approval system (Levels A\u2013D)",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

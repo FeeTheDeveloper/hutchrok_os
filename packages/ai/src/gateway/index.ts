@@ -59,13 +59,13 @@ export type ModelProfile =
 
 export interface AITextRequest {
   capability: 'generateText' | 'reason' | 'summarize';
-  profile?: ModelProfile;
-  systemPrompt?: string;
+  profile?: ModelProfile | undefined;
+  systemPrompt?: string | undefined;
   userPrompt: string;
-  context?: string;
-  maxTokens?: number;
-  temperature?: number;
-  correlationId?: string;
+  context?: string | undefined;
+  maxTokens?: number | undefined;
+  temperature?: number | undefined;
+  correlationId?: string | undefined;
 }
 
 export interface AITextResponse {
@@ -75,19 +75,19 @@ export interface AITextResponse {
   usage?: {
     inputTokens: number;
     outputTokens: number;
-  };
-  correlationId?: string;
-  durationMs?: number;
+  } | undefined;
+  correlationId?: string | undefined;
+  durationMs?: number | undefined;
 }
 
 export interface AIStructuredOutputRequest<TSchema extends z.ZodType> {
   capability: 'generateStructuredOutput' | 'extract' | 'classify';
-  profile?: ModelProfile;
+  profile?: ModelProfile | undefined;
   schema: TSchema;
-  systemPrompt?: string;
+  systemPrompt?: string | undefined;
   userPrompt: string;
-  context?: string;
-  correlationId?: string;
+  context?: string | undefined;
+  correlationId?: string | undefined;
 }
 
 export interface AIStructuredOutputResponse<T> {
@@ -97,37 +97,37 @@ export interface AIStructuredOutputResponse<T> {
   usage?: {
     inputTokens: number;
     outputTokens: number;
-  };
-  correlationId?: string;
+  } | undefined;
+  correlationId?: string | undefined;
 }
 
 export interface AIEmbedRequest {
   capability: 'embed';
   texts: string[];
-  correlationId?: string;
+  correlationId?: string | undefined;
 }
 
 export interface AIEmbedResponse {
   embeddings: number[][];
   providerId: AIProviderId;
   modelId: string;
-  correlationId?: string;
+  correlationId?: string | undefined;
 }
 
 export interface AIImageRequest {
   capability: 'generateImage';
-  profile?: ModelProfile;
+  profile?: ModelProfile | undefined;
   prompt: string;
-  size?: string;
-  quality?: string;
-  correlationId?: string;
+  size?: string | undefined;
+  quality?: string | undefined;
+  correlationId?: string | undefined;
 }
 
 export interface AIImageResponse {
   urls: string[];
   providerId: AIProviderId;
   modelId: string;
-  correlationId?: string;
+  correlationId?: string | undefined;
 }
 
 // ─────────────────────────────────────────
@@ -136,7 +136,7 @@ export interface AIImageResponse {
 
 export interface AIProvider {
   id: AIProviderId;
-  supportedCapabilities: AICapability[];
+  supportedCapabilities: readonly AICapability[];
   generateText(req: AITextRequest): Promise<AITextResponse>;
   generateStructuredOutput<T>(req: AIStructuredOutputRequest<z.ZodType<T>>): Promise<AIStructuredOutputResponse<T>>;
   embed?(req: AIEmbedRequest): Promise<AIEmbedResponse>;
@@ -206,7 +206,7 @@ export interface ModelRouterConfig {
 
 export interface ModelRoutingRule {
   capability?: AICapability;
-  profile?: ModelProfile;
+  profile?: ModelProfile | undefined;
   providerId: AIProviderId;
   modelId?: string;
 }
@@ -214,7 +214,7 @@ export interface ModelRoutingRule {
 export class ModelRouter {
   constructor(private readonly config: ModelRouterConfig) {}
 
-  route(context: { capability: AICapability; profile?: ModelProfile }): AIProviderId {
+  route(context: { capability: AICapability; profile?: ModelProfile | undefined }): AIProviderId {
     for (const rule of this.config.rules) {
       const capabilityMatch = !rule.capability || rule.capability === context.capability;
       const profileMatch = !rule.profile || rule.profile === context.profile;
