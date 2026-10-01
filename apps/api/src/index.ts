@@ -60,6 +60,12 @@ app.onError((err, c) => {
 // ─────────────────────────────────────────
 const port = parseInt(process.env['API_PORT'] ?? '3001', 10);
 
+// Site Autopilot currently uses in-memory threads, dedupe keys, approvals, and audit.
+// A production process must not acknowledge signed signals that it cannot durably recover.
+if (process.env['APP_ENV'] === 'production' || process.env['NODE_ENV'] === 'production') {
+  throw new Error('Production startup blocked: Site Autopilot requires persistent stores and recovery before activation.');
+}
+
 serve({ fetch: app.fetch, port }, () => {
   console.log(`[Hutchrok OS API] Running on port ${port}`);
   console.log(`[Hutchrok OS API] Environment: ${process.env['APP_ENV'] ?? 'local'}`);

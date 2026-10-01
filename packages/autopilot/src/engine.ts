@@ -496,7 +496,10 @@ export class AutopilotEngine {
         : template === 'service_request'
           ? renderServiceRequestAck({
               ...base,
-              ...(typeof ctx.signal?.data['selectedService'] === 'string' ? { serviceName: ctx.signal.data['selectedService'] } : {}),
+              ...(typeof ctx.signal?.data['selectedService'] === 'string' &&
+                detectSensitivity(ctx.signal.data['selectedService']).classification !== 'RESTRICTED'
+                ? { serviceName: ctx.signal.data['selectedService'].slice(0, 100) }
+                : {}),
             })
           : renderAcknowledgment({
               ...base,
@@ -812,7 +815,7 @@ export class AutopilotEngine {
     }
     const ids = [...(email.inReplyTo ? [email.inReplyTo] : []), ...email.references];
     const byHeaders = await this.deps.store.findThreadByMessageIds(ids);
-    if (byHeaders) return byHeaders;
+    if (byHeaders && byHeaders.contactEmail === from) return byHeaders;
 
     const windowDays = this.deps.config.threadMatchWindowDays ?? 30;
     const since = new Date(this.now().getTime() - windowDays * 86_400_000).toISOString();
@@ -877,10 +880,17 @@ export class AutopilotEngine {
     return `Your ${signal.type.split('.')[0]?.replace(/_/g, ' ') ?? 'request'} with Hutchrok Solutions Group`;
   }
 
-  /** Drop contact details from signal data before it lands in events. */
+  /** Keep only operational labels; site data is otherwise untrusted and may contain client records. */
   private safeData(data: Record<string, unknown>): Record<string, unknown> {
-    const blocked = new Set(['contact', 'email', 'phone', 'ssn', 'ein', 'dob', 'address']);
-    return Object.fromEntries(Object.entries(data).filter(([k]) => !blocked.has(k.toLowerCase())));
+    const allowed = new Set(['old_status', 'new_status', 'document_type', 'selectedService', 'page', 'event']);
+    return Object.fromEntries(
+      Object.entries(data)
+        .filter(([key, value]) => allowed.has(key) && typeof value === 'string')
+        .map(([key, value]) => {
+          const text = (value as string).slice(0, 200);
+          return [key, detectSensitivity(text).classification === 'RESTRICTED' ? '[REDACTED]' : redactSensitive(text)];
+        }),
+    );
   }
 
   private isInternalSender(from: string): boolean {

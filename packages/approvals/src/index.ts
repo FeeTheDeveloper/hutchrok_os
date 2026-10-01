@@ -34,7 +34,8 @@ export interface ApprovalStore {
   create(approval: Approval): Promise<void>;
   findById(id: string): Promise<Approval | null>;
   findPending(filter: { entityType?: string; level?: ApprovalLevel }): Promise<Approval[]>;
-  update(id: string, updates: Partial<Approval>): Promise<void>;
+  /** Atomically resolve one pending approval; persistent stores must use a conditional update. */
+  resolvePending(id: string, status: 'APPROVED' | 'REJECTED', userId: string, reason?: string): Promise<Approval | null>;
 }
 
 // ─────────────────────────────────────────
@@ -92,22 +93,8 @@ export class ApprovalService {
     approvedByUserId: string,
     reason?: string
   ): Promise<Approval> {
-    const approval = await this.store.findById(approvalId);
-    if (!approval) throw new Error(`Approval ${approvalId} not found.`);
-    if (approval.status !== 'PENDING') {
-      throw new Error(`Approval ${approvalId} is not in PENDING status (current: ${approval.status}).`);
-    }
-
-    const updated: Approval = {
-      ...approval,
-      status: 'APPROVED',
-      approvedByUserId,
-      reason: reason ?? approval.reason,
-      resolvedAt: nowISO(),
-      updatedAt: nowISO(),
-    };
-
-    await this.store.update(approvalId, updated);
+    const updated = await this.store.resolvePending(approvalId, 'APPROVED', approvedByUserId, reason);
+    if (!updated) throw new Error(`Approval ${approvalId} is not in PENDING status or has expired.`);
 
     if (this.callbacks?.onApproved) {
       await this.callbacks.onApproved(updated);
@@ -121,22 +108,8 @@ export class ApprovalService {
     rejectedByUserId: string,
     reason?: string
   ): Promise<Approval> {
-    const approval = await this.store.findById(approvalId);
-    if (!approval) throw new Error(`Approval ${approvalId} not found.`);
-    if (approval.status !== 'PENDING') {
-      throw new Error(`Approval ${approvalId} is not in PENDING status.`);
-    }
-
-    const updated: Approval = {
-      ...approval,
-      status: 'REJECTED',
-      approvedByUserId: rejectedByUserId,
-      reason,
-      resolvedAt: nowISO(),
-      updatedAt: nowISO(),
-    };
-
-    await this.store.update(approvalId, updated);
+    const updated = await this.store.resolvePending(approvalId, 'REJECTED', rejectedByUserId, reason);
+    if (!updated) throw new Error(`Approval ${approvalId} is not in PENDING status or has expired.`);
 
     if (this.callbacks?.onRejected) {
       await this.callbacks.onRejected(updated);
@@ -180,17 +153,31 @@ export class InMemoryApprovalStore implements ApprovalStore {
   async findPending(filter: { entityType?: string; level?: ApprovalLevel }): Promise<Approval[]> {
     return [...this.approvals.values()].filter((a) => {
       if (a.status !== 'PENDING') return false;
+      if (a.expiresAt && a.expiresAt <= nowISO()) return false;
       if (filter.entityType && a.entityType !== filter.entityType) return false;
       if (filter.level && a.level !== filter.level) return false;
       return true;
     });
   }
 
-  async update(id: string, updates: Partial<Approval>): Promise<void> {
+  async resolvePending(id: string, status: 'APPROVED' | 'REJECTED', userId: string, reason?: string): Promise<Approval | null> {
     const existing = this.approvals.get(id);
-    if (existing) {
-      this.approvals.set(id, { ...existing, ...updates });
+    if (!existing || existing.status !== 'PENDING') return null;
+    const now = nowISO();
+    if (existing.expiresAt && existing.expiresAt <= now) {
+      this.approvals.set(id, { ...existing, status: 'EXPIRED', resolvedAt: now, updatedAt: now });
+      return null;
     }
+    const updated: Approval = {
+      ...existing,
+      status,
+      approvedByUserId: userId,
+      reason: reason ?? existing.reason,
+      resolvedAt: now,
+      updatedAt: now,
+    };
+    this.approvals.set(id, updated);
+    return updated;
   }
 
   getAll(): Approval[] {

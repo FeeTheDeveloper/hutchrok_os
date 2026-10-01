@@ -3,6 +3,7 @@
  */
 
 import { timingSafeEqual } from 'crypto';
+import { createHash } from 'crypto';
 import type { MiddlewareHandler } from 'hono';
 
 /** Fixed-window in-memory rate limiter keyed by client IP. */
@@ -40,3 +41,37 @@ export const requireOperator: MiddlewareHandler = async (c, next) => {
   if (a.length !== b.length || !timingSafeEqual(a, b)) return c.json({ error: 'Unauthorized' }, 401);
   await next();
 };
+
+export interface ApproverIdentity {
+  userId: string;
+  maxLevel: 'C' | 'D';
+}
+
+/**
+ * A separate, individual credential is required to resolve a human approval.
+ * AUTOPILOT_APPROVERS_JSON contains [{"userId":"...","keySha256":"64 hex chars","maxLevel":"C|D"}].
+ * Store only key hashes in configuration; the key itself is supplied in a request header.
+ */
+export function identifyApprover(key: string | undefined, configured = process.env['AUTOPILOT_APPROVERS_JSON']): ApproverIdentity | null {
+  if (!key || !configured) return null;
+  let entries: unknown;
+  try {
+    entries = JSON.parse(configured);
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(entries)) return null;
+  const suppliedHash = createHash('sha256').update(key).digest();
+  for (const entry of entries) {
+    if (typeof entry !== 'object' || entry === null) continue;
+    const candidate = entry as Record<string, unknown>;
+    if (typeof candidate['userId'] !== 'string' || !candidate['userId'] ||
+        (candidate['maxLevel'] !== 'C' && candidate['maxLevel'] !== 'D') ||
+        typeof candidate['keySha256'] !== 'string' || !/^[a-f0-9]{64}$/i.test(candidate['keySha256'])) continue;
+    const expected = Buffer.from(candidate['keySha256'], 'hex');
+    if (timingSafeEqual(suppliedHash, expected)) {
+      return { userId: candidate['userId'], maxLevel: candidate['maxLevel'] };
+    }
+  }
+  return null;
+}
