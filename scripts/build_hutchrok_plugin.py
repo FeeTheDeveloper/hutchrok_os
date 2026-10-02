@@ -82,13 +82,15 @@ def validate() -> list[Path]:
 
 def package(files: list[Path], output: Path) -> str:
     output.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    # Stored entries avoid host zlib differences, so Windows and Linux builds
+    # have the same archive hash for the same repository bytes.
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_STORED) as archive:
         for path in files:
             relative = path.relative_to(SOURCE).as_posix()
             info = zipfile.ZipInfo(relative, date_time=(1980, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
+            info.compress_type = zipfile.ZIP_STORED
             info.external_attr = 0o100644 << 16
-            archive.writestr(info, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+            archive.writestr(info, path.read_bytes())
     return hashlib.sha256(output.read_bytes()).hexdigest()
 
 
