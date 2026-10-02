@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hutchrok Solutions Group"
+  short_description: "Coordinate Hutchrok services and filing workflows"
+  default_prompt: "Use $hutchrok-command to assess this client and prepare the appropriate service deliverables."

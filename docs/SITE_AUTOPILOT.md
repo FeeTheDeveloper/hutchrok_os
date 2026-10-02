@@ -67,8 +67,8 @@ Every `AUTOPILOT_BEAT_INTERVAL_MS` (default 5 min) the OS sweeps itself:
 | `POST /webhooks/email/resend` | Svix signature, `RESEND_WEBHOOK_SECRET` |
 | `POST /webhooks/email/inbound` | HMAC (same scheme), `EMAIL_INBOUND_SECRET` |
 | `GET /api/v1/autopilot/{status,threads,threads/:id,tasks,drafts,approvals}` | `Bearer API_SECRET_KEY` |
-| `POST /api/v1/autopilot/approvals/:id/approve` `{ approverUserId, subject?, text? }` | `Bearer API_SECRET_KEY` |
-| `POST /api/v1/autopilot/approvals/:id/reject` `{ approverUserId, reason? }` | `Bearer API_SECRET_KEY` |
+| `POST /api/v1/autopilot/approvals/:id/approve` `{ subject?, text? }` | `Bearer API_SECRET_KEY` plus individual `x-hutchrok-approver-key` |
+| `POST /api/v1/autopilot/approvals/:id/reject` `{ reason? }` | `Bearer API_SECRET_KEY` plus individual `x-hutchrok-approver-key` |
 | `POST /api/v1/autopilot/beat/tick` | `Bearer API_SECRET_KEY` |
 
 All public endpoints are rate limited; ingestion refuses to run (503) until its secret is set.
@@ -84,7 +84,7 @@ All public endpoints are rate limited; ingestion refuses to run (503) until its 
    `HUTCHROK_OS_SIGNING_SECRET`; site `HUTCHROK_OS_API_URL=https://<os-host>`.
 5. **Replies → OS** — once inbound works, set site `HUTCHROK_OS_MAILBOX=repo_addy@hutchrok.com` so
    client status emails reply into the OS.
-6. Set `API_SECRET_KEY` for the operator API. Production deploy of the OS requires Level C approval.
+6. Set `API_SECRET_KEY` for the operator API. Configure `AUTOPILOT_APPROVERS_JSON` with one entry per human approver: `userId`, SHA-256 hash of an individual random approval key, and `maxLevel` (`C` or owner-only `D`). Give the raw key to that individual through a secret channel. The API derives approval attribution from the key and rejects caller-supplied IDs. Production deploy of the OS requires Level C approval.
 
 ## Current limits
 

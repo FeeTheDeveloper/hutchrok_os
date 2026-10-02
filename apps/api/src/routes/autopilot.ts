@@ -6,8 +6,8 @@
  * GET  /api/v1/autopilot/threads/:id
  * GET  /api/v1/autopilot/tasks?status=open&queue=filings
  * GET  /api/v1/autopilot/approvals            — pending Level C/D items
- * POST /api/v1/autopilot/approvals/:id/approve { approverUserId, subject?, text? }
- * POST /api/v1/autopilot/approvals/:id/reject  { approverUserId, reason? }
+ * POST /api/v1/autopilot/approvals/:id/approve { subject?, text? }
+ * POST /api/v1/autopilot/approvals/:id/reject  { reason? }
  * POST /api/v1/autopilot/beat/tick             — run the beat now
  */
 
@@ -15,22 +15,29 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { DraftStatus, TaskStatus, ThreadStatus } from '@hutchrok-os/autopilot';
 import { autopilot, autopilotStore, beat, emailConnector } from '../autopilot.js';
-import { requireOperator } from '../middleware/security.js';
+import { identifyApprover, requireOperator } from '../middleware/security.js';
 
 export const autopilotRouter = new Hono();
 
 autopilotRouter.use('*', requireOperator);
 
 const ApproveSchema = z.object({
-  approverUserId: z.string().min(1).max(200),
   subject: z.string().min(1).max(300).optional(),
   text: z.string().min(1).max(20_000).optional(),
-});
+}).strict();
 
 const RejectSchema = z.object({
-  approverUserId: z.string().min(1).max(200),
   reason: z.string().max(1000).optional(),
-});
+}).strict();
+
+async function authorizedApprover(id: string, key: string | undefined) {
+  const identity = identifyApprover(key);
+  if (!identity) return null;
+  const pending = await autopilot.approvals.getPending();
+  const approval = pending.find((item) => item.id === id);
+  if (!approval || (approval.level === 'D' && identity.maxLevel !== 'D')) return null;
+  return identity;
+}
 
 autopilotRouter.get('/status', async (c) => {
   const [awaitingTeam, openTasks, pending] = await Promise.all([
@@ -84,16 +91,18 @@ autopilotRouter.post('/approvals/:id/approve', async (c) => {
   if (!parsed.success) return c.json({ error: 'Invalid body', details: parsed.error.issues }, 400);
 
   const id = c.req.param('id');
+  const approver = await authorizedApprover(id, c.req.header('x-hutchrok-approver-key'));
+  if (!approver) return c.json({ error: 'Approver is not authorized for this pending approval' }, 403);
   try {
     const draft = await autopilotStore.findDraftByApproval(id);
     if (draft) {
-      const sent = await autopilot.approveDraft(id, parsed.data.approverUserId, {
+      const sent = await autopilot.approveDraft(id, approver.userId, {
         ...(parsed.data.subject ? { subject: parsed.data.subject } : {}),
         ...(parsed.data.text ? { text: parsed.data.text } : {}),
       });
       return c.json({ draft: { id: sent.id, status: sent.status, error: sent.error } });
     }
-    const approval = await autopilot.approvals.approve(id, parsed.data.approverUserId);
+    const approval = await autopilot.approvals.approve(id, approver.userId);
     return c.json({ approval });
   } catch (e) {
     return c.json({ error: (e as Error).message }, 409);
@@ -103,8 +112,10 @@ autopilotRouter.post('/approvals/:id/approve', async (c) => {
 autopilotRouter.post('/approvals/:id/reject', async (c) => {
   const parsed = RejectSchema.safeParse(await c.req.json().catch(() => null));
   if (!parsed.success) return c.json({ error: 'Invalid body', details: parsed.error.issues }, 400);
+  const approver = await authorizedApprover(c.req.param('id'), c.req.header('x-hutchrok-approver-key'));
+  if (!approver) return c.json({ error: 'Approver is not authorized for this pending approval' }, 403);
   try {
-    await autopilot.approvals.reject(c.req.param('id'), parsed.data.approverUserId, parsed.data.reason);
+    await autopilot.approvals.reject(c.req.param('id'), approver.userId, parsed.data.reason);
     return c.json({ rejected: true });
   } catch (e) {
     return c.json({ error: (e as Error).message }, 409);

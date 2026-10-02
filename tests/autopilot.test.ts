@@ -86,7 +86,9 @@ describe('Site Autopilot', () => {
     mail = new MockEmailConnector({ email: MAILBOX, name: 'Hutchrok Solutions Group' });
     sink = new InMemoryAuditSink();
     events = new InMemoryEventPublisher();
-    clock = new Date('2026-09-28T15:00:00Z');
+    // ApprovalService timestamps requests with the real clock, so keep the
+    // injected beat clock aligned to avoid a date-dependent digest failure.
+    clock = new Date();
     engine = build();
   });
 
@@ -141,15 +143,32 @@ describe('Site Autopilot', () => {
       expect(pending[0]?.level).toBe('C');
     });
 
-    it('strips contact details from the event payload', async () => {
-      await engine.handleSiteSignal(contactSignal({ type: 'lead.created', data: { email: 'x@y.com', interests: ['logo'] } }));
+    it('allows only operational labels into the event payload', async () => {
+      await engine.handleSiteSignal(contactSignal({
+        type: 'lead.created',
+        data: { email: 'x@y.com', interests: ['logo'], nested: { ssn: '123-45-6789' }, page: '/lead', selectedService: 'DD-214 review' },
+      }));
       const evt = events.events.find((e) => e.event_type === 'lead.created');
       expect(JSON.stringify(evt?.payload)).not.toContain('x@y.com');
-      expect(JSON.stringify(evt?.payload)).toContain('logo');
+      expect(JSON.stringify(evt?.payload)).not.toContain('123-45-6789');
+      expect(JSON.stringify(evt?.payload)).not.toContain('DD-214');
+      expect(evt?.payload['data']).toEqual({ page: '/lead', selectedService: '[REDACTED]' });
     });
   });
 
   describe('inbound email', () => {
+    it('does not attach another sender to a thread through a copied Message-ID', async () => {
+      const first = await engine.handleInboundEmail(inbound({ from: 'first@example.com', internetMessageId: '<known@example.com>' }));
+      const second = await engine.handleInboundEmail(inbound({
+        from: 'second@example.com',
+        internetMessageId: '<other@example.com>',
+        inReplyTo: '<known@example.com>',
+      }));
+      expect(second.threadId).not.toBe(first.threadId);
+      expect((await store.getThread(first.threadId!))?.contactEmail).toBe('first@example.com');
+      expect((await store.getThread(second.threadId!))?.contactEmail).toBe('second@example.com');
+    });
+
     it('threads a customer reply to the acknowledgment back onto the site thread', async () => {
       const run = await engine.handleSiteSignal(contactSignal());
       const ack = mail.sent.find((m) => m.to[0] === 'avery@example.com')!;

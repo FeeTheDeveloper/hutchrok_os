@@ -93,4 +93,24 @@ describe('Approval System', () => {
     const pending = await service.getPending({ level: 'C' });
     expect(pending.length).toBe(2);
   });
+
+  it('allows only one concurrent resolution and callback', async () => {
+    const store = new InMemoryApprovalStore();
+    let sends = 0;
+    const service = new ApprovalService(store, { onApproved: async () => { sends += 1; } });
+    const approval = await service.request({ level: 'C', entityType: 'email_reply', entityId: generateId() });
+    const results = await Promise.allSettled([
+      service.approve(approval.id, 'operator-1'),
+      service.approve(approval.id, 'operator-2'),
+    ]);
+    expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+    expect(sends).toBe(1);
+  });
+
+  it('does not approve an expired request', async () => {
+    const { service, store } = createService();
+    const approval = await service.request({ level: 'C', entityType: 'email_reply', entityId: generateId(), expiresInMs: -1 });
+    await expect(service.approve(approval.id, 'operator-1')).rejects.toThrow('expired');
+    expect((await store.findById(approval.id))?.status).toBe('EXPIRED');
+  });
 });
