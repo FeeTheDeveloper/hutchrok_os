@@ -61,7 +61,10 @@ def validate() -> list[Path]:
         if not re.match(r"\A---\nname: [^\n]+\ndescription: [^\n]+\n---\n", content):
             fail(f"Invalid skill frontmatter: {name}")
 
-    files = sorted(path for path in SOURCE.rglob("*") if path.is_file())
+    files = sorted(
+        (path for path in SOURCE.rglob("*") if path.is_file()),
+        key=lambda path: path.relative_to(SOURCE).as_posix(),
+    )
     if not files:
         fail("Plugin has no files")
     for path in files:
