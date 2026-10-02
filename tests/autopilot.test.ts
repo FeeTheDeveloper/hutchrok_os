@@ -86,7 +86,9 @@ describe('Site Autopilot', () => {
     mail = new MockEmailConnector({ email: MAILBOX, name: 'Hutchrok Solutions Group' });
     sink = new InMemoryAuditSink();
     events = new InMemoryEventPublisher();
-    clock = new Date('2026-09-28T15:00:00Z');
+    // ApprovalService timestamps requests with the real clock, so keep the
+    // injected beat clock aligned to avoid a date-dependent digest failure.
+    clock = new Date();
     engine = build();
   });
 

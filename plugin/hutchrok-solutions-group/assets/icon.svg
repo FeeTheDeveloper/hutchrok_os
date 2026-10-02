@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Hutchrok Solutions Group">
+  <rect width="128" height="128" rx="24" fill="#102638"/>
+  <path d="M26 26v76M102 26v76M26 64h76" fill="none" stroke="#d8a450" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="64" cy="64" r="9" fill="#f4efe3"/>
+</svg>

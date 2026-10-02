@@ -81,6 +81,18 @@ jobs:
           NODE_ENV: test
           APP_ENV: test
 
+      - name: Validate repo-owned Hutchrok plugin
+        run: python3 scripts/build_hutchrok_plugin.py --check
+
+      - name: Build Hutchrok plugin artifact
+        run: python3 scripts/build_hutchrok_plugin.py --output dist/hutchrok-solutions-group.zip
+
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hutchrok-solutions-group-plugin
+          path: dist/hutchrok-solutions-group.zip
+
   # ─────────────────────────────────────────
   # Preview Deploy (on PRs)
   # ─────────────────────────────────────────

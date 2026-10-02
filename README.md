@@ -162,6 +162,8 @@ every step audited. See **[docs/SITE_AUTOPILOT.md](docs/SITE_AUTOPILOT.md)**.
 
 ## Documentation
 
+The private [Hutchrok Solutions Group plugin](./plugin/hutchrok-solutions-group/plugin.json) is built from this repository. Its 33 Skills cover service procedures and governed OS action reviews; the [release procedure](./docs/PLUGIN_RELEASE.md) validates and packages the repo source before updating the installed plugin. The plugin is Skills-only and does not activate the OS or its provider connectors.
+
 | Document | Description |
 |---|---|
 | [ARCHITECTURE.md](./docs/architecture/ARCHITECTURE.md) | System architecture |
