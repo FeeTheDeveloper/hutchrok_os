@@ -21,6 +21,10 @@ Use Hutchrok Solutions Group as the service owner and Fee The Developer Main as 
 
 For OS action tracing use `hutchrok-os-signal-triage`; for approval packets use `hutchrok-os-approval-review`; for FTD-CORE-001 engineering review use `hutchrok-os-control-review`. These Skills describe controlled work and do not activate the OS or its placeholder MCP tools.
 
+## Texas filing home
+
+Use hutchrok-texas-sos-portal for Hutchrok account navigation at https://texas-sos.appiancloud.us/suite/sites/home-page; hutchrok-texas-vvl-waiver for King Fee/client VVL review and entity-specific fee relief; hutchrok-texas-filing-corrections for draft edits, rejected resubmissions, corrections and amendments. Keep credentials and veteran records outside Git and model context. Source: FeeTheDeveloper/hutchrok_os; portable and Claude skills must remain identical.
+
 ## Service routing
 Each row is a dedicated procedure; the plugin export exposes each as its own SKILL.md. Supporting tasks within each service are covered inside that procedure.
 
