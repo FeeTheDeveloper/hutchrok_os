@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hutchrok-solutions-group",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "repository": "https://github.com/FeeTheDeveloper/hutchrok_os",
   "description": "Hutchrok business formation, filing document preparation, consulting, credit readiness, compliance, veteran services, housing, contracting and launch workflows.",
   "author": {
@@ -12,7 +12,7 @@
       "interface": {
         "displayName": "Hutchrok Solutions Group",
         "shortDescription": "Business and OS workflows",
-        "longDescription": "Hutchrok service procedures and source-linked Hutchrok OS review workflows. Prepare filing drafts, business plans, signal triage, approval packets, engineering findings, and plugin releases with evidence and human review. Skills-only: no live OS, government, or financial connector is included. Texas SOSPortal navigation, filing preparation, corrections and entity-specific VVL waiver review use available secure host browser tools and existing human approval gates. Claude skills share the repository source.",
+        "longDescription": "Hutchrok service procedures and source-linked Hutchrok OS review workflows. Prepare filing drafts, business plans, signal triage, approval packets, engineering findings, and plugin releases with evidence and human review. Skills-only: no live OS, government, or financial connector is included. Texas SOSPortal navigation, filing preparation, corrections and entity-specific VVL waiver review use available secure host browser tools and existing human approval gates. Claude skills share the repository source. Separate Texas Comptroller eSystems/Webfile procedures cover veteran qualification, report-year obligations and report corrections.",
         "developerName": "Hutchrok Solutions Group",
         "logo": "./assets/logo.svg",
         "composerIcon": "./assets/icon.svg",

@@ -25,6 +25,8 @@ For OS action tracing use `hutchrok-os-signal-triage`; for approval packets use 
 
 Use hutchrok-texas-sos-portal for Hutchrok account navigation at https://texas-sos.appiancloud.us/suite/sites/home-page; hutchrok-texas-vvl-waiver for King Fee/client VVL review and entity-specific fee relief; hutchrok-texas-filing-corrections for draft edits, rejected resubmissions, corrections and amendments. Keep credentials and veteran records outside Git and model context. Source: FeeTheDeveloper/hutchrok_os; portable and Claude skills must remain identical.
 
+Use hutchrok-texas-comptroller for the separate Texas Comptroller eSystems/Webfile account, franchise reporting, veteran qualification reconciliation and tax-report corrections. Enter through https://comptroller.texas.gov/taxes/file-pay/; do not label the SOSPortal URL as Comptroller Webfile.
+
 ## Service routing
 Each row is a dedicated procedure; the plugin export exposes each as its own SKILL.md. Supporting tasks within each service are covered inside that procedure.
 

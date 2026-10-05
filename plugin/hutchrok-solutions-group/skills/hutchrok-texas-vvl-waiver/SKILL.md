@@ -22,3 +22,7 @@ The veteran page still referenced SOSUpload when checked; the [Business Services
 Record each fee as VERIFIED_APPLICABLE, VERIFIED_NOT_APPLICABLE or UNRESOLVED, with rule/source, private evidence references, base fee, verified waived amount, remaining due and portal total. These are review results, not new OS state-machine states.
 
 If the portal unexpectedly charges, save draft/preview and resolve before payment/submission. Never silently pay, promise reimbursement or bypass checkout. Prepare a support inquiry if needed; sending requires applicable authorization. Deliver an entity-specific waiver review, missing evidence, fee reconciliation and next action. Acceptance requires supported qualification, secure document availability and reconciliation of each fee without veteran records in Git/logs/model context.
+
+## Comptroller coordination
+
+Use hutchrok-texas-comptroller for franchise-tax qualification, report-year duties and agency status reconciliation. SOS fee relief and Comptroller reporting relief require separate determinations. Follow current Comptroller guidance for PIR/OIR and historical reports rather than assuming the generic SOS reporting note applies to every qualified entity/year.
