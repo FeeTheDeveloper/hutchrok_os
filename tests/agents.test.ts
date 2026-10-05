@@ -22,6 +22,8 @@ describe('Agent Definitions', () => {
     const agent = getAgentDefinition('filing');
     expect(agent?.prohibitedActions).toContain('submit_filing');
     expect(agent?.approvalLevel).toBe('C');
+    expect(agent?.permissions).toContain('prepare:filing');
+    expect(agent?.accessibleTools).toContain('filing.prepare_portal_handoff');
   });
 
   it('claude engineering agent cannot deploy to production without approval', () => {

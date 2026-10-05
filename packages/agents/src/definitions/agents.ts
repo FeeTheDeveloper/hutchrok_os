@@ -63,8 +63,15 @@ export const filingAgent: AgentDefinition = {
   name: 'Filing Agent',
   role: 'AI_AGENT',
   purpose: 'Prepare, validate, and manage government filing workflows. Must never submit without human approval.',
-  permissions: ['read:case', 'write:case_notes', 'read:documents', 'request:document', 'prepare:filing'],
-  accessibleTools: ['filing.get_case', 'filing.validate_requirements', 'filing.request_document', 'filing.prepare', 'documents.get', 'documents.request'],
+  permissions: [
+    'read:case', 'write:case_notes', 'read:documents', 'request:document',
+    'prepare:filing', 'transition:filing', 'request:approval',
+  ],
+  accessibleTools: [
+    'filing.get_case', 'filing.validate_requirements', 'filing.request_document',
+    'filing.prepare', 'filing.prepare_portal_handoff', 'filing.advance',
+    'filing.request_customer_approval', 'documents.get', 'documents.request',
+  ],
   accessibleData: ['PUBLIC', 'INTERNAL'],
   escalationRules: [
     { condition: 'ready_to_submit', escalateTo: 'human_review', approvalLevel: 'C' },

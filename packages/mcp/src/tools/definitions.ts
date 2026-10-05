@@ -126,6 +126,7 @@ export const customersCreate: MCPToolDefinition = {
     source: z.string().optional(),
   }),
   riskLevel: 'MEDIUM',
+  requiredCapability: 'create:case',
   handler: async (_input, _ctx) => {
     return { note: 'Wire up to customer domain service.' };
   },
@@ -170,6 +171,7 @@ export const filingGetCase: MCPToolDefinition = {
   description: 'Get a filing case by ID.',
   inputSchema: z.object({ caseId: z.string().uuid() }),
   riskLevel: 'LOW',
+  requiredCapability: 'read:case',
   handler: async (_input, _ctx) => {
     return { note: 'Wire up to filing domain service.' };
   },
@@ -185,10 +187,11 @@ export const filingAdvance: MCPToolDefinition = {
     notes: z.string().optional(),
   }),
   riskLevel: 'HIGH',
+  requiredCapability: 'transition:filing',
   requiresApproval: true,
   approvalLevel: 'C',
   handler: async (_input, _ctx) => {
-    return { note: 'Wire up to filing state machine with Level C approval enforcement.' };
+    throw new Error('filing.advance is not implemented; no filing state changed.');
   },
 };
 
@@ -201,11 +204,72 @@ export const filingRequestCustomerApproval: MCPToolDefinition = {
     message: z.string().optional(),
   }),
   riskLevel: 'MEDIUM',
+  requiredCapability: 'request:approval',
   requiresApproval: true,
   approvalLevel: 'B',
   handler: async (_input, _ctx) => {
     return { note: 'Wire up to communications + approval service.' };
   },
+};
+
+/**
+ * Builds an internal, version-bound handoff manifest for a human SOSPortal
+ * operator. It deliberately accepts an opaque record reference, not the portal
+ * URL or credentials, and has no submit, signature, attestation, or payment
+ * capability.
+ */
+export const filingPreparePortalHandoff: MCPToolDefinition = {
+  name: 'prepare_portal_handoff',
+  namespace: 'filing',
+  description: 'Prepare a Texas SOSPortal human-operator handoff. Never submits, signs, attests, or pays.',
+  inputSchema: z.object({
+    caseId: z.string().uuid(),
+    recordReference: z.string().min(1).max(160).regex(/^[A-Za-z0-9_-]+$/),
+    packetVersion: z.string().min(1).max(40).regex(/^[A-Za-z0-9._-]+$/),
+    packetDigest: z.string().regex(/^[a-f0-9]{64}$/),
+    jurisdiction: z.literal('TX'),
+    filingPurpose: z.enum([
+      'create_or_register_entity',
+      'manage_entity_record',
+      'limited_purpose_filing',
+      'merger_or_conversion',
+    ]),
+    entityType: z.string().min(1).max(80),
+    officialInstructionsCheckedAt: z.string().datetime(),
+    formRevision: z.string().min(1).max(32).optional(),
+  }),
+  riskLevel: 'MEDIUM',
+  requiredCapability: 'prepare:filing',
+  handler: async (input, ctx) => ({
+    status: 'HUMAN_OPERATOR_REQUIRED',
+    tenantId: ctx.tenantId,
+    businessId: ctx.businessId,
+    environment: ctx.environment,
+    caseId: input.caseId,
+    recordReference: input.recordReference,
+    packetVersion: input.packetVersion,
+    packetDigest: input.packetDigest,
+    jurisdiction: input.jurisdiction,
+    filingPurpose: input.filingPurpose,
+    entityType: input.entityType,
+    officialInstructionsCheckedAt: input.officialInstructionsCheckedAt,
+    ...(input.formRevision ? { formRevision: input.formRevision } : {}),
+    portal: 'texas_sos_portal',
+    operatorChecklist: [
+      'Verify displayed SOSPortal account and entity record.',
+      'Compare the portal preview to the approved packet digest and version.',
+      'Obtain authorized human signature and attestation where required.',
+      'Obtain action-specific approval before checkout, payment, or submission.',
+      'Capture the submission receipt and agency disposition separately.',
+    ],
+    prohibitedAgentActions: [
+      'enter_portal_credentials',
+      'sign_or_attest',
+      'submit_filing',
+      'make_payment',
+      'claim_agency_acceptance',
+    ],
+  }),
 };
 
 // ─────────────────────────────────────────
@@ -481,6 +545,7 @@ export const ALL_MCP_TOOLS: MCPToolDefinition[] = [
   filingGetCase,
   filingAdvance,
   filingRequestCustomerApproval,
+  filingPreparePortalHandoff,
   paymentsGetRevenueSummary,
   paymentsRequestRefund,
   communicationsGetUnanswered,
