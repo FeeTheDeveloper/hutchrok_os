@@ -1,0 +1,2 @@
+# Filing form templates are binary; never diff or normalize line endings.
+*.pdf binary
