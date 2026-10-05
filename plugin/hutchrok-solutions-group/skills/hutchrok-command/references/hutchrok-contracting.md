@@ -16,3 +16,7 @@ Capability statement draft, opportunity register, compliance matrix and proposal
 
 ## Completion check
 Confirm the deliverable covers the requested entity and scope, facts have evidence, unresolved items are visible, and status claims match completed actions. Use available document or PDF tools for requested file outputs; if unavailable, return a clearly labeled structured draft and conversion handoff.
+
+## Federal workflow routing
+
+For federal execution and mandatory readiness use hutchrok-sam-operator and hutchrok-sdvosb-contracting; bind work to the dated organization scope and verify live registration/certification before external claims.

@@ -16,3 +16,7 @@ Program eligibility worksheet, evidence index, draft answers and verification lo
 
 ## Completion check
 Confirm the deliverable covers the requested entity and scope, facts have evidence, unresolved items are visible, and status claims match completed actions. Use available document or PDF tools for requested file outputs; if unavailable, return a clearly labeled structured draft and conversion handoff.
+
+## Federal workflow routing
+
+For SBA SDVOSB work use hutchrok-sdvosb-contracting. Texas VVL, active SAM registration and SBA certification are separate evidence gates; the uploaded entity summary alone does not establish VetCert status.
