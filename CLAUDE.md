@@ -250,3 +250,19 @@ Every company OS execution must resolve tenant/company context and enforce isola
 
 ### Plugin/product synchronization
 When business doctrine materially changes, update the reusable Hutchrok skill source and Claude engineering guidance in the same change set where practical. The Hutchrok plugin is a controlled productized slice of company intelligence; it is not the authoritative private OS.
+
+
+## Research, Marketing, and Channel Operations
+
+Research, content production, scheduling, publishing, and performance feedback are first-class Hutchrok OS activities.
+
+The research layer must maintain source provenance and prioritize authoritative primary sources for legal, regulatory, veteran, procurement, eligibility, and program claims. LinkedIn, YouTube, trade media, and expert content may supply discovery, examples, market signals, and viewpoints; verify material claims before turning them into Hutchrok assertions.
+
+Content transformation must create original Hutchrok/company expression from facts, ideas, and resource value rather than copying protected posts, videos, scripts, graphics, or distinctive expression. Maintain source IDs/attribution where appropriate.
+
+Every operating company may have its own YouTube, LinkedIn, Google/Workspace, and other social/business outlets. Never share credentials or publish across entities without resolved tenant/company/account context and authority.
+
+The OS should support a research-to-marketing lifecycle:
+Research -> Source Ledger -> Fact Verification -> Content Brief -> Original Channel Variants -> Review/Approval -> Calendar -> Authorized Scheduling/Publishing -> Publication Evidence -> Metrics -> Governed Learning.
+
+The Hutchrok plugin/business intelligence layer should perform supported business-side research, drafting, planning, scheduling, and connected actions when the required authorized tool exists. New connectors, OAuth/API wiring, persistent integration failures, deployments, or substantial code changes escalate to Fee The Developer / Claude engineering. Do not convert a missing integration into a fake completion.
