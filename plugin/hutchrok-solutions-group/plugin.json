@@ -1,9 +1,9 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hutchrok-solutions-group",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "repository": "https://github.com/FeeTheDeveloper/hutchrok_os",
-  "description": "Hutchrok business intelligence, formation, filings, compliance, contracting, autonomy opportunity assessment, company-OS planning and controlled plugin productization workflows.",
+  "description": "Hutchrok business intelligence, formation, compliance, contracting, autonomy, source-validated research, multi-channel marketing, scheduling and controlled plugin productization workflows.",
   "author": {
     "name": "Alfreddie Postell II / Hutchrok Solutions Group"
   },
@@ -11,16 +11,16 @@
     "com.openai": {
       "interface": {
         "displayName": "Hutchrok Solutions Group",
-        "shortDescription": "Business intelligence and OS workflows",
-        "longDescription": "Hutchrok is the upstream business-intelligence, formation, compliance and autonomous-business opportunity layer. It assesses where automation is economically and operationally justified, prepares governed company-OS engineering handoffs to Fee The Developer, and separates private company intelligence from productized plugin intelligence. Plays Ranch Programming is the plugin distribution and endorsement layer. Existing filing, Texas, veteran, SAM.gov, SDVOSB, consulting, credit, marketing and OS review procedures remain governed by evidence, entity-specific eligibility, tenant separation and human approval gates.",
+        "shortDescription": "Business intelligence, research and OS workflows",
+        "longDescription": "Hutchrok is the upstream business-intelligence and operating layer for formation, compliance, contracting, autonomous-business assessment, source-validated research, original content transformation, campaign scheduling and governed connected actions. It prioritizes authoritative sources for material claims, uses LinkedIn/YouTube and other media for discovery and market intelligence, preserves entity/account separation, and escalates new integrations or heavy engineering to Fee The Developer/Claude. Plays Ranch Programming remains the plugin distribution and endorsement layer.",
         "developerName": "Hutchrok Solutions Group",
         "logo": "./assets/logo.svg",
         "composerIcon": "./assets/icon.svg",
         "category": "Productivity",
         "defaultPrompt": [
-          "Assess this opportunity for Hutchrok autonomy fit and give a GO/NO-GO recommendation.",
-          "Prepare or correct this business filing with evidence and human review gates.",
-          "Turn this validated company capability into a controlled plugin productization plan for Plays Ranch."
+          "Research this topic using authoritative sources and turn it into a Hutchrok content campaign.",
+          "Build a YouTube and LinkedIn rollout from these verified resources and prepare the publishing schedule.",
+          "Assess this opportunity for Hutchrok autonomy fit and give a GO/NO-GO recommendation."
         ]
       }
     }
