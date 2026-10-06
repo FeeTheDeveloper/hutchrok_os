@@ -186,3 +186,7 @@ The private [Hutchrok Solutions Group plugin](./plugin/hutchrok-solutions-group/
 **Engineering Authority** — Fee The Developer
 **Builder** — Claude
 **Primary Orchestration** — ChatGPT
+
+## Video production (OpenMontage)
+
+[OpenMontage](https://github.com/calesthio/OpenMontage) is attached as a pinned git submodule at `vendor/openmontage` (AGPL-3.0, kept separate from this codebase). Fetch it with `git submodule update --init --depth 1 vendor/openmontage`. Setup, license boundary, and key handling: [`docs/integrations/OPENMONTAGE.md`](docs/integrations/OPENMONTAGE.md).
