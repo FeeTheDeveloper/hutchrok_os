@@ -227,3 +227,26 @@ Completed in this build:
 6. Executing production deployments without Level C approval
 7. Making financial changes of any kind
 8. Modifying this file to expand Claude's own permissions
+
+
+---
+
+## Autonomous Business Factory Doctrine
+
+Hutchrok Solutions Group is the upstream business-intelligence, formation/correction, compliance, contracting-readiness, and autonomy-opportunity gate. Fee The Developer is the engineering layer. Real operating companies validate the automation in production-like controlled operation. Plays Ranch Programming begins as the plugin publisher/distributor/endorsement layer and may distribute broader autonomous-business packages only after validation.
+
+### Mandatory sequence
+Opportunity -> Autonomy Assessment -> GO/NO-GO -> Formation/Correction -> Compliance Baseline -> Automation Blueprint -> Company OS -> Controlled Pilot -> Evidence/QA -> Product Intelligence Boundary -> Plugin -> Plays Ranch Verification/Distribution -> Governed Feedback.
+
+### Engineering rule
+Do not automate a company merely because a workflow can be automated. Require a Hutchrok opportunity assessment covering market opportunity, recurring contract potential, automation potential, distributed-workforce fit, regulatory complexity, certification/contracting opportunity, unit economics, and required human authority.
+
+Automation is intended to remove management friction and coordinate qualified workers/providers; it must not bypass required human, licensed, fiduciary, safety, legal, financial, filing, or owner authority.
+
+### Intelligence boundary
+Every capability must be classified PRIVATE, PRODUCT, or EXTERNAL before productization. Unresolved capabilities default to PRIVATE. Never distribute another company's credentials, customer data, private records, proprietary internal intelligence, certifications, or legal identity.
+
+Every company OS execution must resolve tenant/company context and enforce isolated credentials, data, policy, approvals, and audit history. No unresolved tenant context means no execution.
+
+### Plugin/product synchronization
+When business doctrine materially changes, update the reusable Hutchrok skill source and Claude engineering guidance in the same change set where practical. The Hutchrok plugin is a controlled productized slice of company intelligence; it is not the authoritative private OS.
