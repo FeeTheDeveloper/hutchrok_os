@@ -47,3 +47,6 @@ pnpm-debug.log*
 # Docker
 docker-compose.override.yml
 next-env.d.ts
+
+# Motion reel scaffolds (tools/motion-reel-kit)
+videos/
