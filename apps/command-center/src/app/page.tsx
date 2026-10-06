@@ -1,234 +1,151 @@
-/**
- * Hutchrok Command Center — Home Dashboard
- *
- * Primary screen answers: WHAT REQUIRES KING FEE'S ATTENTION RIGHT NOW?
- *
- * Sections:
- * - Action Required
- * - Critical Alerts
- * - Revenue
- * - Leads
- * - Customers Waiting
- * - Filings Requiring Approval
- * - Payments
- * - Calendar
- * - Government Opportunities
- * - Campaign Performance
- * - System Health
- * - Claude Build Status
- */
+import {
+  attentionItems,
+  controlStages,
+  domainReadiness,
+  readinessSummary,
+  recoveryItems,
+} from '../lib/control-panel';
+
+const statusLabel = {
+  blocked: 'Blocked',
+  guarded: 'Guarded',
+  unavailable: 'Not connected',
+  ready: 'Ready',
+} as const;
+
+function ArrowIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20">
+      <path d="M4 10h11M11 6l4 4-4 4" />
+    </svg>
+  );
+}
+
+function MarkIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 32 32">
+      <path d="M5 7h7v7h8V7h7v18h-7v-7h-8v7H5z" />
+    </svg>
+  );
+}
+
+function StatusPill({ status }: { status: keyof typeof statusLabel }) {
+  return <span className={`status-pill status-${status}`}>{statusLabel[status]}</span>;
+}
 
 export default function DashboardPage() {
   return (
-    <main style={styles.container}>
-      {/* Header */}
-      <header style={styles.header}>
-        <div style={styles.headerInner}>
-          <h1 style={styles.brand}>HUTCHROK</h1>
-          <div style={styles.headerActions}>
-            <QuickActionButton label="APPROVE" />
-            <QuickActionButton label="ASK" />
-            <QuickActionButton label="SEARCH" />
-          </div>
+    <main className="shell">
+      <header className="topbar">
+        <a className="brand" href="#overview" aria-label="Hutchrok command center home">
+          <span className="brand-mark"><MarkIcon /></span>
+          <span>Hutchrok <b>Command</b></span>
+        </a>
+        <nav className="topnav" aria-label="Dashboard sections">
+          <a href="#attention">Attention</a>
+          <a href="#controls">Controls</a>
+          <a href="#recovery">Recovery</a>
+        </nav>
+        <div className="mode-lock" aria-label="Environment local review, production blocked">
+          <span className="mode-dot" />
+          Local review
         </div>
-        <p style={styles.tagline}>What requires your attention right now?</p>
       </header>
 
-      {/* Sections */}
-      <div style={styles.sections}>
-        <DashboardSection title="⚡ Action Required" priority="critical">
-          <PlaceholderCard message="Wire up to approvals service" />
-        </DashboardSection>
+      <section className="hero" id="overview" aria-labelledby="dashboard-title">
+        <div className="hero-copy">
+          <p className="eyebrow">FTD-CORE-001 / Operator view</p>
+          <h1 id="dashboard-title">See what can move.<br /><span>Stop what cannot.</span></h1>
+          <p className="hero-description">
+            One visual control surface for decisions, system boundaries, and recovery readiness.
+            This view reports repository evidence only; it does not activate providers or approve work.
+          </p>
+        </div>
+        <div className="hero-state" aria-label="System readiness summary">
+          <div className="hero-state-head">
+            <span>Open control gaps</span>
+            <StatusPill status="blocked" />
+          </div>
+          <strong>{String(attentionItems.length).padStart(2, '0')}<small> blocking gaps</small></strong>
+          <div className="readiness-track" aria-hidden="true">
+            {attentionItems.map((item) => <span key={item.title} />)}
+          </div>
+          <p>{readinessSummary.reason}</p>
+        </div>
+      </section>
 
-        <DashboardSection title="🔴 Critical Alerts" priority="high">
-          <PlaceholderCard message="Wire up to alerts service" />
-        </DashboardSection>
+      <section className="control-spine" aria-labelledby="control-spine-title">
+        <div className="spine-heading">
+          <div><p className="eyebrow">Governed path</p><h2 id="control-spine-title">Every effect must clear the spine</h2></div>
+        </div>
+        <ol className="stage-list">
+          {controlStages.map((stage, index) => (
+            <li key={stage.name} className={`stage stage-${stage.status}`}>
+              <div className="stage-index">{String(index + 1).padStart(2, '0')}</div>
+              <div><span>{stage.name}</span><p>{stage.detail}</p></div>
+              <StatusPill status={stage.status} />
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        <DashboardSection title="💵 Revenue" priority="normal">
-          <StatCard label="Today" value="—" />
-          <StatCard label="This Month" value="—" />
-        </DashboardSection>
+      <div className="dashboard-grid">
+        <section className="panel attention-panel" id="attention" aria-labelledby="attention-title">
+          <div className="panel-heading">
+            <div><p className="eyebrow">Decision queue</p><h2 id="attention-title">Needs attention</h2></div>
+            <span className="panel-count">{attentionItems.length}</span>
+          </div>
+          <div className="attention-list">
+            {attentionItems.map((item) => (
+              <article className="attention-item" key={item.title}>
+                <div className={`severity severity-${item.severity}`} aria-hidden="true" />
+                <div className="attention-copy">
+                  <div className="attention-meta"><span>{item.area}</span><span>{item.owner}</span></div>
+                  <h3>{item.title}</h3>
+                  <p>{item.detail}</p>
+                </div>
+                <span className="review-link" aria-hidden="true"><ArrowIcon /></span>
+              </article>
+            ))}
+          </div>
+        </section>
 
-        <DashboardSection title="🎯 Leads" priority="normal">
-          <StatCard label="New Today" value="—" />
-          <StatCard label="Qualified" value="—" />
-        </DashboardSection>
-
-        <DashboardSection title="👥 Customers Waiting" priority="high">
-          <PlaceholderCard message="Wire up to communications service" />
-        </DashboardSection>
-
-        <DashboardSection title="📋 Filings Requiring Approval" priority="high">
-          <PlaceholderCard message="Wire up to filing service" />
-        </DashboardSection>
-
-        <DashboardSection title="🏛️ Government Opportunities" priority="normal">
-          <PlaceholderCard message="Wire up to GovCon service" />
-        </DashboardSection>
-
-        <DashboardSection title="📊 Campaign Performance" priority="normal">
-          <PlaceholderCard message="Wire up to marketing analytics" />
-        </DashboardSection>
-
-        <DashboardSection title="🔧 System Health" priority="normal">
-          <StatCard label="API" value="—" />
-          <StatCard label="DB" value="—" />
-        </DashboardSection>
-
-        <DashboardSection title="🤖 Claude Build Status" priority="normal">
-          <PlaceholderCard message="Wire up to development service" />
-        </DashboardSection>
+        <aside className="panel boundary-panel" id="controls" aria-labelledby="boundary-title">
+          <div className="panel-heading"><div><p className="eyebrow">Boundary monitor</p><h2 id="boundary-title">External effects</h2></div></div>
+          <div className="boundary-summary">
+            <span className="boundary-lock" aria-hidden="true">×</span>
+            <div><strong>0 enabled</strong><p>Live connectors remain unavailable.</p></div>
+          </div>
+          <ul className="domain-list">
+            {domainReadiness.map((domain) => (
+              <li key={domain.name}><span>{domain.name}</span><StatusPill status={domain.status} /></li>
+            ))}
+          </ul>
+          <p className="panel-note">Provider names describe planned boundaries, not verified connections.</p>
+        </aside>
       </div>
+
+      <section className="recovery-section" id="recovery" aria-labelledby="recovery-title">
+        <div className="recovery-heading">
+          <div><p className="eyebrow">Production gate</p><h2 id="recovery-title">Recovery before autonomy</h2></div>
+          <p>Activation stays blocked until state survives a crash, effects can be reconciled, and every decision remains attributable.</p>
+        </div>
+        <div className="recovery-grid">
+          {recoveryItems.map((item) => (
+            <article key={item.title}>
+              <span className={`recovery-signal recovery-${item.status}`} aria-hidden="true" />
+              <h3>{item.title}</h3><p>{item.detail}</p><StatusPill status={item.status} />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div><span className="footer-label">Evidence</span><strong>Local repository</strong></div>
+        <div><span className="footer-label">Runtime data</span><strong>Not connected</strong></div>
+        <div><span className="footer-label">Production</span><strong>Startup blocked</strong></div>
+        <p>Hutchrok Solutions Group · Control plane review surface</p>
+      </footer>
     </main>
   );
 }
-
-// ─────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────
-
-function DashboardSection({
-  title,
-  priority,
-  children,
-}: {
-  title: string;
-  priority: 'critical' | 'high' | 'normal';
-  children: React.ReactNode;
-}) {
-  const borderColor = priority === 'critical' ? '#ff3333' : priority === 'high' ? '#ff9900' : '#333';
-  return (
-    <section style={{ ...styles.section, borderLeft: `3px solid ${borderColor}` }}>
-      <h2 style={styles.sectionTitle}>{title}</h2>
-      <div style={styles.sectionContent}>{children}</div>
-    </section>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={styles.statCard}>
-      <div style={styles.statValue}>{value}</div>
-      <div style={styles.statLabel}>{label}</div>
-    </div>
-  );
-}
-
-function PlaceholderCard({ message }: { message: string }) {
-  return (
-    <div style={styles.placeholder}>
-      <span style={{ color: '#666', fontSize: '12px' }}>{message}</span>
-    </div>
-  );
-}
-
-function QuickActionButton({ label }: { label: string }) {
-  return (
-    <button style={styles.quickAction} type="button">
-      {label}
-    </button>
-  );
-}
-
-// ─────────────────────────────────────────
-// Styles (inline for zero-dependency bootstrap)
-// ─────────────────────────────────────────
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: '#0a0a0a',
-    color: '#fff',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    maxWidth: '480px',
-    margin: '0 auto',
-    paddingBottom: '32px',
-  },
-  header: {
-    padding: '20px 16px 12px',
-    background: '#111',
-    borderBottom: '1px solid #222',
-    position: 'sticky' as const,
-    top: 0,
-    zIndex: 10,
-  },
-  headerInner: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '4px',
-  },
-  brand: {
-    margin: 0,
-    fontSize: '20px',
-    fontWeight: 900,
-    letterSpacing: '0.1em',
-    color: '#fff',
-  },
-  tagline: {
-    margin: '4px 0 0',
-    fontSize: '12px',
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  headerActions: {
-    display: 'flex',
-    gap: '6px',
-  },
-  quickAction: {
-    background: '#1a1a1a',
-    border: '1px solid #333',
-    color: '#fff',
-    borderRadius: '6px',
-    padding: '6px 10px',
-    fontSize: '11px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    letterSpacing: '0.05em',
-  },
-  sections: {
-    padding: '0 0 16px',
-  },
-  section: {
-    margin: '12px 16px',
-    padding: '14px 14px',
-    background: '#111',
-    borderRadius: '8px',
-    borderLeft: '3px solid #333',
-  },
-  sectionTitle: {
-    margin: '0 0 10px',
-    fontSize: '13px',
-    fontWeight: 700,
-    color: '#ccc',
-    letterSpacing: '0.03em',
-  },
-  sectionContent: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap' as const,
-  },
-  statCard: {
-    background: '#1a1a1a',
-    borderRadius: '6px',
-    padding: '10px 14px',
-    minWidth: '80px',
-    textAlign: 'center' as const,
-  },
-  statValue: {
-    fontSize: '24px',
-    fontWeight: 800,
-    color: '#fff',
-  },
-  statLabel: {
-    fontSize: '10px',
-    color: '#666',
-    marginTop: '2px',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-  },
-  placeholder: {
-    padding: '8px 0',
-    width: '100%',
-  },
-} as const;
