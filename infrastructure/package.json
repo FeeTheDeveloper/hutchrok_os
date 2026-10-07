@@ -28,7 +28,9 @@
     "@hutchrok-os/domain": "workspace:*",
     "@hutchrok-os/shared": "workspace:*",
     "@hutchrok-os/approvals": "workspace:*",
-    "@hutchrok-os/autopilot": "workspace:*"
+    "@hutchrok-os/autopilot": "workspace:*",
+    "@hutchrok-os/audit": "workspace:*",
+    "@hutchrok-os/events": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.0"

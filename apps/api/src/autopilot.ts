@@ -20,8 +20,14 @@ import {
 import { MockEmailConnector, ResendEmailConnector, type EmailConnector } from '@hutchrok-os/connectors';
 import { modelRoutingFallback, modelRoutingRules } from '@hutchrok-os/config/model-routing';
 import type { ApprovalStore } from '@hutchrok-os/approvals';
-import type { AutopilotStore } from '@hutchrok-os/autopilot';
-import { PgApprovalStore, PgAutopilotStore } from '@hutchrok-os/db/stores';
+import type { AuditSink } from '@hutchrok-os/audit';
+import type { AutopilotStore, EventPublisher } from '@hutchrok-os/autopilot';
+import {
+  PgApprovalStore,
+  PgAuditSink,
+  PgAutopilotStore,
+  PgEventStore,
+} from '@hutchrok-os/db/stores';
 
 import { HUTCHROK_BINDING, receipts } from './activity.js';
 import { getDb, isDatabaseConfigured } from './db/index.js';
@@ -74,6 +80,8 @@ const keyClaimer = receipts.keyClaimerFor(HUTCHROK_BINDING);
 function buildAutopilotStores(): {
   store: AutopilotStore;
   approvals: ApprovalStore;
+  auditSink: AuditSink;
+  events: EventPublisher;
   backend: 'postgres' | 'memory';
 } {
   if (isDatabaseConfigured()) {
@@ -82,12 +90,22 @@ function buildAutopilotStores(): {
       backend: 'postgres',
       store: new PgAutopilotStore(db, keyClaimer),
       approvals: new PgApprovalStore(db),
+      auditSink: new PgAuditSink(db),
+      events: new PgEventStore(db),
     };
   }
+
+  // CLAUDE.md forbids weakening audit logging. In-memory is acceptable for
+  // local work but the trail does not survive a restart, so say so loudly.
+  console.warn(
+    '[autopilot] DATABASE_URL not set — audit trail and event log are in-memory and will be lost on restart.'
+  );
   return {
     backend: 'memory',
     store: new InMemoryAutopilotStore(),
     approvals: new InMemoryApprovalStore(),
+    auditSink: new InMemoryAuditSink(),
+    events: new InMemoryEventPublisher(),
   };
 }
 
@@ -95,8 +113,8 @@ const autopilotStores = buildAutopilotStores();
 
 export const autopilotBackend = autopilotStores.backend;
 export const autopilotStore = autopilotStores.store;
-export const autopilotAuditSink = new InMemoryAuditSink();
-export const autopilotEvents = new InMemoryEventPublisher();
+export const autopilotAuditSink = autopilotStores.auditSink;
+export const autopilotEvents = autopilotStores.events;
 export const emailConnector = buildEmailConnector(mailbox);
 const audit = new AuditService(autopilotAuditSink);
 const drafter = buildDrafter();

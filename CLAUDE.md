@@ -199,11 +199,14 @@ When acting as Claude Engineering Agent (`claude-engineering`), Claude:
 Completed in this build:
 - Monorepo structure (pnpm workspaces + Turbo)
 - Company Kernel (types + loader + Hutchrok kernel config)
-- Core database schema (Drizzle ORM, PostgreSQL, 37 tables) + 2 migrations
+- Core database schema (Drizzle ORM, PostgreSQL, 37 tables) + 4 migrations
 - Core domain models (Zod schemas; core entities + activity kernel entities)
 - Veteran filing state machine (22 states, enforced transitions)
-- Event system (normalized envelope, 50+ event types, factory)
-- Audit service (append-oriented, in-memory sink for dev)
+- Event system (normalized envelope, 75+ event types, factory; `PgEventStore`
+  persists ActivityEnvelopes whole — tenant binding, channel, classification,
+  evidence ref — so the log is replayable and tenant-filterable)
+- Audit service (append-only; `PgAuditSink` when DATABASE_URL is set, in-memory
+  sink for dev — a replayed append is a no-op, never an overwrite)
 - Policy engine (data access, action authorization, model usage)
 - Approval system (Levels A–D, auto-approve A/B, human approval C/D)
 - AI Gateway (provider-neutral, OpenAI + Anthropic + Mock adapters)
@@ -231,7 +234,7 @@ Completed in this build:
 - API server (Hono, health routes, event ingestion, site + autopilot routes,
   signed provider webhooks)
 - Command Center (Next.js mobile-first scaffold — 3 files; no inbox/queues yet)
-- Test suite (16 test files, 221 tests; `tests/helpers/pg.ts` gives any test
+- Test suite (17 test files, 242 tests; `tests/helpers/pg.ts` gives any test
   real Postgres in-process, applying the committed migrations with drizzle's
   own migrator — no Docker required)
 - CI/CD (GitHub Actions with build, test, preview, production gates)
@@ -245,6 +248,9 @@ Completed in this build:
   selected (see the Autonomous Operations handoff, Section 18)
 - Consent/opt-out service over `ConsentRecord` (schema exists, no service yet)
 - Wire the 26 stub MCP handlers to real domain services
+- Audit retention/export policy — the trail is durable now but unbounded
+- Backfill: `events.tenant_id` is nullable, so rows written before migration
+  0003 carry no tenant binding
 - Supabase auth integration (`packages/auth`)
 - Knowledge store service (`packages/knowledge`)
 - Learning pipeline (`packages/learning`)

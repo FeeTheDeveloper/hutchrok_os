@@ -15,6 +15,20 @@
       "when": 1791397376259,
       "tag": "0001_equal_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791398479263,
+      "tag": "0002_fresh_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791398733423,
+      "tag": "0003_clear_trauma",
+      "breakpoints": true
     }
   ]
 }

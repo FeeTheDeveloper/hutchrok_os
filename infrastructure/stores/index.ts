@@ -12,3 +12,5 @@ export { PgExceptionStore } from './exceptions.js';
 export { PgScheduleStore } from './schedules.js';
 export { PgApprovalStore } from './approvals.js';
 export { PgAutopilotStore, type KeyClaimer } from './autopilot.js';
+export { PgAuditSink } from './audit.js';
+export { PgEventStore, type EventPublisher, type EventQueryFilter } from './events.js';

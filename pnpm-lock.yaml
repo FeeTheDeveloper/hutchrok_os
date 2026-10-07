@@ -182,12 +182,18 @@ importers:
       '@hutchrok-os/approvals':
         specifier: workspace:*
         version: link:../packages/approvals
+      '@hutchrok-os/audit':
+        specifier: workspace:*
+        version: link:../packages/audit
       '@hutchrok-os/autopilot':
         specifier: workspace:*
         version: link:../packages/autopilot
       '@hutchrok-os/domain':
         specifier: workspace:*
         version: link:../packages/domain
+      '@hutchrok-os/events':
+        specifier: workspace:*
+        version: link:../packages/events
       '@hutchrok-os/shared':
         specifier: workspace:*
         version: link:../packages/shared

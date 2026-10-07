@@ -317,7 +317,10 @@ export const events = pgTable('events', {
   source: text('source').notNull(),
   actor: text('actor').notNull(),
   entityType: text('entity_type'),
-  entityId: uuid('entity_id'),
+  // Text, not uuid: the domain declares this `z.string()`, not `z.string().uuid()`.
+  // Real callers pass provider message ids, site signal ids, email addresses and
+  // literals like 'unsent'. A uuid column rejects every one of them.
+  entityId: text('entity_id'),
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull().defaultNow(),
   correlationId: text('correlation_id').notNull(),
   causationId: text('causation_id'),
@@ -325,6 +328,19 @@ export const events = pgTable('events', {
   metadata: jsonb('metadata').notNull().default({}),
   riskLevel: riskLevelEnum('risk_level').notNull().default('LOW'),
   schemaVersion: text('schema_version').notNull().default('1.0'),
+
+  // ActivityEnvelope fields. Nullable because a plain EventEnvelope carries
+  // none of them; populated for anything that crossed the ingestion boundary.
+  // Without these columns the event log silently drops the tenant binding and
+  // the data classification, which Section 12 depends on.
+  tenantId: text('tenant_id'),
+  companyId: text('company_id'),
+  channel: text('channel'),
+  dataClassification: dataClassificationEnum('data_classification'),
+  evidenceRef: text('evidence_ref'),
+  provider: text('provider'),
+  providerEventId: text('provider_event_id'),
+
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -338,7 +354,10 @@ export const auditLogs = pgTable('audit_logs', {
   actorType: actorTypeEnum('actor_type').notNull(),
   actionType: text('action_type').notNull(),
   entityType: text('entity_type'),
-  entityId: uuid('entity_id'),
+  // Text, not uuid: the domain declares this `z.string()`, not `z.string().uuid()`.
+  // Real callers pass provider message ids, site signal ids, email addresses and
+  // literals like 'unsent'. A uuid column rejects every one of them.
+  entityId: text('entity_id'),
   before: jsonb('before'),
   after: jsonb('after'),
   result: auditResultEnum('result').notNull(),
@@ -363,7 +382,10 @@ export const alerts = pgTable('alerts', {
   title: text('title').notNull(),
   body: text('body'),
   entityType: text('entity_type'),
-  entityId: uuid('entity_id'),
+  // Text, not uuid: the domain declares this `z.string()`, not `z.string().uuid()`.
+  // Real callers pass provider message ids, site signal ids, email addresses and
+  // literals like 'unsent'. A uuid column rejects every one of them.
+  entityId: text('entity_id'),
   acknowledged: boolean('acknowledged').notNull().default(false),
   acknowledgedByUserId: uuid('acknowledged_by_user_id'),
   acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true }),
