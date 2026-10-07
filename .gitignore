@@ -48,5 +48,11 @@ pnpm-debug.log*
 docker-compose.override.yml
 next-env.d.ts
 
+# Filing department restricted working material
+# Keep entity records, addresses, signatures, veteran documents, tax identifiers,
+# portal locators, receipts, and generated submission packets out of Git.
+/filing-workspace/private/
+/filing-workspace/generated/
+
 # Motion reel scaffolds (tools/motion-reel-kit)
 videos/
