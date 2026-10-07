@@ -1,10 +1,14 @@
 import {
   attentionItems,
-  controlStages,
+  buildConnectionReadiness,
+  buildControlStages,
+  businessIdentity,
   domainReadiness,
   readinessSummary,
   recoveryItems,
 } from '../lib/control-panel';
+
+export const dynamic = 'force-dynamic';
 
 const statusLabel = {
   blocked: 'Blocked',
@@ -34,6 +38,11 @@ function StatusPill({ status }: { status: keyof typeof statusLabel }) {
 }
 
 export default function DashboardPage() {
+  const controlStages = buildControlStages(process.env);
+  const connections = buildConnectionReadiness(process.env);
+  const kernelEnabledCount = connections.filter((item) => item.configuredInKernel).length;
+  const localConfigCount = connections.filter((item) => item.status === 'guarded').length;
+
   return (
     <main className="shell">
       <header className="topbar">
@@ -44,6 +53,7 @@ export default function DashboardPage() {
         <nav className="topnav" aria-label="Dashboard sections">
           <a href="#attention">Attention</a>
           <a href="#controls">Controls</a>
+          <a href="#connections">Connections</a>
           <a href="#recovery">Recovery</a>
         </nav>
         <div className="mode-lock" aria-label="Environment local review, production blocked">
@@ -66,12 +76,20 @@ export default function DashboardPage() {
             <span>Open control gaps</span>
             <StatusPill status="blocked" />
           </div>
-          <strong>{String(attentionItems.length).padStart(2, '0')}<small> blocking gaps</small></strong>
+          <strong>{String(attentionItems.length).padStart(2, '0')}<small> review gates</small></strong>
           <div className="readiness-track" aria-hidden="true">
             {attentionItems.map((item) => <span key={item.title} />)}
           </div>
           <p>{readinessSummary.reason}</p>
         </div>
+      </section>
+
+      <section className="identity-strip" aria-label="Verified public business identity">
+        <div><span>Legal name</span><strong>{businessIdentity.legalName}</strong></div>
+        <div><span>Public contact</span><strong>{businessIdentity.publicEmail}</strong></div>
+        <div><span>Public location</span><strong>{businessIdentity.publicAddress}</strong></div>
+        <div><span>Operating time</span><strong>{businessIdentity.timezone}</strong></div>
+        <p>{businessIdentity.source}. Public contact location is not registered-agent authority.</p>
       </section>
 
       <section className="control-spine" aria-labelledby="control-spine-title">
@@ -114,7 +132,7 @@ export default function DashboardPage() {
           <div className="panel-heading"><div><p className="eyebrow">Boundary monitor</p><h2 id="boundary-title">External effects</h2></div></div>
           <div className="boundary-summary">
             <span className="boundary-lock" aria-hidden="true">×</span>
-            <div><strong>0 enabled</strong><p>Live connectors remain unavailable.</p></div>
+            <div><strong>0 verified live</strong><p>{kernelEnabledCount} capabilities are declared enabled in the kernel.</p></div>
           </div>
           <ul className="domain-list">
             {domainReadiness.map((domain) => (
@@ -124,6 +142,34 @@ export default function DashboardPage() {
           <p className="panel-note">Provider names describe planned boundaries, not verified connections.</p>
         </aside>
       </div>
+
+      <section className="connections-section" id="connections" aria-labelledby="connections-title">
+        <div className="connections-heading">
+          <div><p className="eyebrow">Connection board</p><h2 id="connections-title">What is wired. What is still needed.</h2></div>
+          <div className="connection-totals" aria-label="Connection readiness totals">
+            <span><b>{kernelEnabledCount}</b> enabled in kernel</span>
+            <span><b>{localConfigCount}</b> local configs detected</span>
+            <span><b>0</b> live verified</span>
+          </div>
+        </div>
+        <div className="connection-grid">
+          {connections.map((item) => (
+            <article className="connection-card" key={item.id}>
+              <div className="connection-card-head">
+                <h3>{item.name}</h3>
+                <StatusPill status={item.status} />
+              </div>
+              <div className={`kernel-state ${item.configuredInKernel ? 'kernel-enabled' : 'kernel-disabled'}`}>
+                <span aria-hidden="true" />
+                {item.configuredInKernel ? 'Enabled in kernel' : 'Not enabled in kernel'}
+              </div>
+              <p>{item.detail}</p>
+              <div className="connection-needed"><span>{item.stateLabel}</span><strong>{item.needed}</strong></div>
+            </article>
+          ))}
+        </div>
+        <p className="connections-note">Green means declared in repository configuration—not authenticated, reachable, or authorized. Live verification requires an account-bound check and a receipt.</p>
+      </section>
 
       <section className="recovery-section" id="recovery" aria-labelledby="recovery-title">
         <div className="recovery-heading">

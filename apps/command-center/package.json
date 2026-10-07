@@ -12,6 +12,7 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
+    "@hutchrok-os/config": "workspace:*",
     "@hutchrok-os/shared": "workspace:*",
     "@hutchrok-os/domain": "workspace:*",
     "next": "^15.0.0",

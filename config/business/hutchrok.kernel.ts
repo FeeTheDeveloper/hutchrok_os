@@ -23,9 +23,9 @@ export const hutchrokKernel: CompanyKernel = {
     ownerAlias: 'King Fee',
     engineeringAuthority: 'Fee The Developer',
     ein: { classification: 'RESTRICTED', envRef: 'HUTCHROK_EIN' },
-    stateOfFormation: 'PLACEHOLDER — confirm with owner',
+    stateOfFormation: 'PLACEHOLDER — verify against the accepted formation record',
     entityType: 'LLC',
-    timezone: 'America/New_York',
+    timezone: 'America/Chicago',
     website: 'https://hutchrok.com',
     version: '1.0.0',
   },
@@ -34,10 +34,11 @@ export const hutchrokKernel: CompanyKernel = {
   // PUBLIC CONTACT
   // ──────────────────────────────────────────────
   contact: {
-    emailPrimary: 'info@hutchrok.com',
-    emailSupport: 'support@hutchrok.com',
+    emailPrimary: 'contact@hutchrok.com',
     phone: 'PLACEHOLDER — confirm business phone',
-    address: 'PLACEHOLDER — confirm mailing address',
+    // Public contact location shown on hutchrok.com as of 2026-10-07.
+    // This is not authority to use it as a client's registered office.
+    address: '990 S State Hwy 5 (TX-5), Fairview, TX 75069',
     workspaceDomain: 'hutchrok.com',
   },
 
@@ -247,7 +248,9 @@ export const hutchrokKernel: CompanyKernel = {
     },
     stripe: {
       enabled: true,
-      mode: 'live',
+      // Intent only. Runtime remains unavailable until credentials, webhook
+      // ownership, tenant binding, and a live provider check all pass.
+      mode: 'live-when-verified',
       apiKeyEnvRef: 'STRIPE_SECRET_KEY',
     },
     communications: {

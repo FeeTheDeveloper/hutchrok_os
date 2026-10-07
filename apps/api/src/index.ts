@@ -60,10 +60,11 @@ app.onError((err, c) => {
 // ─────────────────────────────────────────
 const port = parseInt(process.env['API_PORT'] ?? '3001', 10);
 
-// Site Autopilot currently uses in-memory threads, dedupe keys, approvals, and audit.
-// A production process must not acknowledge signed signals that it cannot durably recover.
+// Durable adapters exist when DATABASE_URL is configured, but approval-to-effect
+// recovery, provider reconciliation, and complete tenant binding are unfinished.
+// A production process must not acknowledge work it cannot durably recover.
 if (process.env['APP_ENV'] === 'production' || process.env['NODE_ENV'] === 'production') {
-  throw new Error('Production startup blocked: Site Autopilot requires persistent stores and recovery before activation.');
+  throw new Error('Production startup blocked: Site Autopilot requires tenant-bound effect recovery and provider reconciliation before activation.');
 }
 
 serve({ fetch: app.fetch, port }, () => {

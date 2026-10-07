@@ -17,6 +17,7 @@ export default defineConfig({
       '@hutchrok-os/connectors': resolve(__dirname, 'packages/connectors/src/index.ts'),
       '@hutchrok-os/autopilot': resolve(__dirname, 'packages/autopilot/src/index.ts'),
       '@hutchrok-os/activity': resolve(__dirname, 'packages/activity/src/index.ts'),
+      '@hutchrok-os/config/kernel': resolve(__dirname, 'config/business/hutchrok.kernel.ts'),
       '@hutchrok-os/db/stores': resolve(__dirname, 'infrastructure/stores/index.ts'),
       '@hutchrok-os/db': resolve(__dirname, 'infrastructure/database/index.ts'),
     },

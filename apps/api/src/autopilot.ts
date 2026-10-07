@@ -2,8 +2,9 @@
  * Site Autopilot bootstrap — wires the engine, mailbox connector, approvals,
  * audit, and the beat from environment configuration.
  *
- * Persistence is in-memory until the Postgres stores land (Phase 2); the
- * tables already exist in infrastructure/database/schema.ts.
+ * Postgres stores are selected when DATABASE_URL is configured. Local work
+ * may fall back to memory; production remains blocked until effect recovery,
+ * immutable approval binding, and tenant isolation are complete.
  */
 
 import { AIGateway, AnthropicProvider, ModelRouter, OpenAIProvider, type ModelProfile } from '@hutchrok-os/ai';

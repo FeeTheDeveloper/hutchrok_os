@@ -123,6 +123,9 @@ importers:
 
   apps/command-center:
     dependencies:
+      '@hutchrok-os/config':
+        specifier: workspace:*
+        version: link:../../config
       '@hutchrok-os/domain':
         specifier: workspace:*
         version: link:../../packages/domain

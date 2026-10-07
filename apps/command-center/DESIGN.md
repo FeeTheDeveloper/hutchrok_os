@@ -38,7 +38,7 @@ components:
 
 ### Creative North Star
 
-The interface should feel like a field operations binder translated into a modern command deck: numbered checkpoints, physical interlocks, honest material states, and no decorative telemetry.
+The interface should feel like a field operations binder translated into a modern command deck: numbered checkpoints, physical interlocks, honest material states, and no decorative telemetry. The connection board separates repository intent, local configuration presence, and verified live state.
 
 ### Product context and register
 
@@ -106,5 +106,7 @@ Use factual operational language. Repository-derived readiness is labeled as suc
 
 - **Do:** Make the authority and recovery requirement visible beside every risky state.
 - **Do:** Keep production-blocked and data-source labels persistent.
+- **Do:** Use green only for a named scope, such as “enabled in kernel” or an executed repository check.
 - **Don't:** Render placeholder values as live operational telemetry.
+- **Don't:** Treat an environment variable, `enabled: true`, or an HTTP response alone as proof of account-bound provider access.
 - **Don't:** Add an action control before its server-side authorization and audit path exists.

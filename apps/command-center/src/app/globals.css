@@ -56,6 +56,12 @@ h1 span { color: var(--signal); }
 .readiness-track { height: 3px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
 .readiness-track span { display: block; height: 100%; background: var(--signal); }
 
+.identity-strip { max-width: 1440px; margin: 0 auto clamp(3rem, 6vw, 6rem); padding: 1.25rem 4vw; display: grid; grid-template-columns: 1.15fr 1fr 1.6fr 0.8fr; gap: 1.25rem; border-block: 1px solid var(--line); }
+.identity-strip div { min-width: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+.identity-strip div > span { color: var(--muted); font-family: var(--font-data); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.identity-strip strong { font-size: 0.76rem; font-weight: 500; line-height: 1.4; overflow-wrap: anywhere; }
+.identity-strip p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.66rem; line-height: 1.5; }
+
 .status-pill { display: inline-flex; align-items: center; min-height: 24px; padding: 0.25rem 0.55rem; border: 1px solid currentColor; border-radius: 999px; font-family: var(--font-data); font-size: 0.58rem; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
 .status-blocked { color: var(--danger); }
 .status-guarded { color: var(--signal-soft); }
@@ -105,6 +111,26 @@ h1 span { color: var(--signal); }
 .domain-list li { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--line); font-size: 0.8rem; }
 .panel-note { margin: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.7rem; line-height: 1.5; }
 
+.connections-section { padding: clamp(4rem, 7vw, 7rem) 4vw; border-top: 1px solid var(--line); background: #091419; }
+.connections-heading { max-width: 1440px; margin: 0 auto 2.5rem; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: end; }
+.connections-heading h2 { max-width: 850px; margin: 0; font-family: var(--font-display); font-size: clamp(2rem, 4vw, 4rem); line-height: 0.95; letter-spacing: -0.025em; text-transform: uppercase; }
+.connection-totals { display: flex; gap: 1rem; }
+.connection-totals span { min-width: 120px; padding: 0.8rem; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--muted); font-family: var(--font-data); font-size: 0.58rem; line-height: 1.4; text-transform: uppercase; }
+.connection-totals b { display: block; margin-bottom: 0.15rem; color: var(--paper); font-size: 1.35rem; font-weight: 500; }
+.connection-grid { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--line); }
+.connection-card { min-height: 290px; padding: 1.4rem; display: flex; flex-direction: column; background: var(--ink-raised); }
+.connection-card-head { min-height: 54px; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.connection-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.15rem; text-transform: uppercase; }
+.connection-card > p { margin: 1.5rem 0; color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
+.kernel-state { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--muted); font-family: var(--font-data); font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.kernel-state > span { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.kernel-enabled { color: var(--ready); }
+.kernel-enabled > span { background: var(--ready); box-shadow: 0 0 0 5px rgb(138 181 138 / 10%); }
+.connection-needed { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); }
+.connection-needed span { display: block; margin-bottom: 0.4rem; color: var(--signal-soft); font-family: var(--font-data); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.connection-needed strong { display: block; font-size: 0.72rem; font-weight: 500; line-height: 1.5; }
+.connections-note { max-width: 1440px; margin: 1.25rem auto 0; color: var(--muted); font-size: 0.68rem; line-height: 1.5; }
+
 .recovery-section { padding: clamp(4rem, 7vw, 7rem) 4vw; background: #0a151a; border-top: 1px solid var(--line); }
 .recovery-heading { max-width: 1440px; margin: 0 auto 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: flex-end; }
 .recovery-heading > p { max-width: 600px; margin: 0; color: var(--muted); line-height: 1.6; }
@@ -136,6 +162,10 @@ h1 span { color: var(--signal); }
   .stage p { margin-bottom: 0; }
   .stage .status-pill { justify-self: end; }
   .dashboard-grid { grid-template-columns: 1fr; }
+  .identity-strip { grid-template-columns: repeat(2, 1fr); }
+  .connections-heading { grid-template-columns: 1fr; }
+  .connection-totals { flex-wrap: wrap; }
+  .connection-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .recovery-grid { grid-template-columns: repeat(2, 1fr); }
   .footer { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
   .footer p { grid-column: 1 / -1; justify-self: start; }
@@ -144,7 +174,8 @@ h1 span { color: var(--signal); }
 @media (max-width: 600px) {
   .topbar { padding-inline: 1rem; }
   .brand > span:last-child { display: none; }
-  .hero, .dashboard-grid, .recovery-section { padding-inline: 1rem; }
+  .hero, .dashboard-grid, .recovery-section, .connections-section { padding-inline: 1rem; }
+  .identity-strip { margin-bottom: 3rem; padding-inline: 1rem; grid-template-columns: 1fr; }
   h1 { font-size: clamp(3.2rem, 17vw, 5.4rem); }
   .spine-heading { display: block; }
   .stage { grid-template-columns: 30px 1fr; gap: 0.75rem; }
@@ -153,6 +184,9 @@ h1 span { color: var(--signal); }
   .review-link { display: none; }
   .recovery-heading { grid-template-columns: 1fr; gap: 1.25rem; }
   .recovery-grid { grid-template-columns: 1fr; }
+  .connection-grid { grid-template-columns: 1fr; }
+  .connection-totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .connection-totals span { min-width: 0; }
   .recovery-grid article { min-height: 190px; }
   .recovery-signal { margin-bottom: 2rem; }
   .footer { padding-inline: 1rem; grid-template-columns: 1fr; }
