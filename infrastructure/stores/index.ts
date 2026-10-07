@@ -10,3 +10,5 @@ export { PgProviderReceiptStore } from './receipts.js';
 export { PgAssignmentStore } from './assignments.js';
 export { PgExceptionStore } from './exceptions.js';
 export { PgScheduleStore } from './schedules.js';
+export { PgApprovalStore } from './approvals.js';
+export { PgAutopilotStore, type KeyClaimer } from './autopilot.js';

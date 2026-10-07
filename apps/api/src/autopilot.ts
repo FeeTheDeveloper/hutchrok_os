@@ -19,7 +19,12 @@ import {
 } from '@hutchrok-os/autopilot';
 import { MockEmailConnector, ResendEmailConnector, type EmailConnector } from '@hutchrok-os/connectors';
 import { modelRoutingFallback, modelRoutingRules } from '@hutchrok-os/config/model-routing';
+import type { ApprovalStore } from '@hutchrok-os/approvals';
+import type { AutopilotStore } from '@hutchrok-os/autopilot';
+import { PgApprovalStore, PgAutopilotStore } from '@hutchrok-os/db/stores';
+
 import { HUTCHROK_BINDING, receipts } from './activity.js';
+import { getDb, isDatabaseConfigured } from './db/index.js';
 
 export const DEFAULT_OS_MAILBOX = 'repo_addy@hutchrok.com';
 
@@ -63,7 +68,33 @@ function buildDrafter(): ReplyDrafter | undefined {
 
 const mailbox = { email: env('OS_MAILBOX_ADDRESS', DEFAULT_OS_MAILBOX).toLowerCase(), name: env('OS_MAILBOX_NAME', 'Hutchrok Solutions Group') };
 
-export const autopilotStore = new InMemoryAutopilotStore();
+/** Shared idempotency: the lane claims dedupe keys in provider_event_receipts. */
+const keyClaimer = receipts.keyClaimerFor(HUTCHROK_BINDING);
+
+function buildAutopilotStores(): {
+  store: AutopilotStore;
+  approvals: ApprovalStore;
+  backend: 'postgres' | 'memory';
+} {
+  if (isDatabaseConfigured()) {
+    const db = getDb();
+    return {
+      backend: 'postgres',
+      store: new PgAutopilotStore(db, keyClaimer),
+      approvals: new PgApprovalStore(db),
+    };
+  }
+  return {
+    backend: 'memory',
+    store: new InMemoryAutopilotStore(),
+    approvals: new InMemoryApprovalStore(),
+  };
+}
+
+const autopilotStores = buildAutopilotStores();
+
+export const autopilotBackend = autopilotStores.backend;
+export const autopilotStore = autopilotStores.store;
 export const autopilotAuditSink = new InMemoryAuditSink();
 export const autopilotEvents = new InMemoryEventPublisher();
 export const emailConnector = buildEmailConnector(mailbox);
@@ -84,11 +115,11 @@ export const autopilot = new AutopilotEngine({
   store: autopilotStore,
   email: emailConnector,
   audit,
-  approvalStore: new InMemoryApprovalStore(),
+  approvalStore: autopilotStores.approvals,
   events: autopilotEvents,
   // One idempotency record per inbound signal, shared with every webhook —
   // rather than the autopilot store keeping a second set of keys.
-  idempotency: receipts.keyClaimerFor(HUTCHROK_BINDING),
+  idempotency: keyClaimer,
   ...(drafter ? { drafter } : {}),
 });
 

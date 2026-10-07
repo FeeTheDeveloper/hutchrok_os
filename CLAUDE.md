@@ -199,7 +199,7 @@ When acting as Claude Engineering Agent (`claude-engineering`), Claude:
 Completed in this build:
 - Monorepo structure (pnpm workspaces + Turbo)
 - Company Kernel (types + loader + Hutchrok kernel config)
-- Core database schema (Drizzle ORM, PostgreSQL, 37 tables) + initial migration
+- Core database schema (Drizzle ORM, PostgreSQL, 37 tables) + 2 migrations
 - Core domain models (Zod schemas; core entities + activity kernel entities)
 - Veteran filing state machine (22 states, enforced transitions)
 - Event system (normalized envelope, 50+ event types, factory)
@@ -222,12 +222,16 @@ Completed in this build:
 - One idempotency mechanism: the autopilot email/site lane claims dedupe keys
   through `ProviderReceiptService`, sharing the receipts table with every
   webhook (`AutopilotDeps.idempotency`)
+- `PgAutopilotStore` + `PgApprovalStore` — the whole email/site lane is durable
+  when DATABASE_URL is set; threads, nested messages, drafts, tasks,
+  suppression, ack cooldown and approvals all persist. The AutopilotEngine
+  itself is tested end to end against real Postgres.
 - ActivityEnvelope (extends EventEnvelope with tenant/company binding, channel,
   data classification, evidence ref)
 - API server (Hono, health routes, event ingestion, site + autopilot routes,
   signed provider webhooks)
 - Command Center (Next.js mobile-first scaffold — 3 files; no inbox/queues yet)
-- Test suite (15 test files, 185 tests; `tests/helpers/pg.ts` gives any test
+- Test suite (16 test files, 221 tests; `tests/helpers/pg.ts` gives any test
   real Postgres in-process, applying the committed migrations with drizzle's
   own migrator — no Docker required)
 - CI/CD (GitHub Actions with build, test, preview, production gates)
@@ -240,8 +244,6 @@ Completed in this build:
 - Telephony/SMS adapter for 214-447-1386 — **blocked**: provider not yet
   selected (see the Autonomous Operations handoff, Section 18)
 - Consent/opt-out service over `ConsentRecord` (schema exists, no service yet)
-- `PgAutopilotStore` — threads, drafts, tasks, suppression and ack cooldown are
-  still in-memory (the activity kernel is Postgres-backed; autopilot is not)
 - Wire the 26 stub MCP handlers to real domain services
 - Supabase auth integration (`packages/auth`)
 - Knowledge store service (`packages/knowledge`)

@@ -26,7 +26,9 @@
     "drizzle-orm": "^0.33.0",
     "@hutchrok-os/activity": "workspace:*",
     "@hutchrok-os/domain": "workspace:*",
-    "@hutchrok-os/shared": "workspace:*"
+    "@hutchrok-os/shared": "workspace:*",
+    "@hutchrok-os/approvals": "workspace:*",
+    "@hutchrok-os/autopilot": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.0"

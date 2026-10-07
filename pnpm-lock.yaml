@@ -179,6 +179,12 @@ importers:
       '@hutchrok-os/activity':
         specifier: workspace:*
         version: link:../packages/activity
+      '@hutchrok-os/approvals':
+        specifier: workspace:*
+        version: link:../packages/approvals
+      '@hutchrok-os/autopilot':
+        specifier: workspace:*
+        version: link:../packages/autopilot
       '@hutchrok-os/domain':
         specifier: workspace:*
         version: link:../packages/domain

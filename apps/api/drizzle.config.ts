@@ -14,8 +14,10 @@ import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
   dialect: 'postgresql',
-  // index.ts re-exports both the core schema and the activity kernel schema.
-  schema: '../../infrastructure/database/index.ts',
+  // Point at schema.ts directly, not index.ts: drizzle-kit bundles with
+  // esbuild, which does not resolve TypeScript's `./x.js` → `./x.ts`
+  // convention, so any re-export hop would fail to load.
+  schema: '../../infrastructure/database/schema.ts',
   out: '../../infrastructure/database/migrations',
   dbCredentials: {
     url: process.env['DATABASE_URL'] ?? '',
