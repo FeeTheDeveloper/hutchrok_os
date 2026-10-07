@@ -19,6 +19,7 @@ import {
 } from '@hutchrok-os/autopilot';
 import { MockEmailConnector, ResendEmailConnector, type EmailConnector } from '@hutchrok-os/connectors';
 import { modelRoutingFallback, modelRoutingRules } from '@hutchrok-os/config/model-routing';
+import { HUTCHROK_BINDING, receipts } from './activity.js';
 
 export const DEFAULT_OS_MAILBOX = 'repo_addy@hutchrok.com';
 
@@ -85,6 +86,9 @@ export const autopilot = new AutopilotEngine({
   audit,
   approvalStore: new InMemoryApprovalStore(),
   events: autopilotEvents,
+  // One idempotency record per inbound signal, shared with every webhook —
+  // rather than the autopilot store keeping a second set of keys.
+  idempotency: receipts.keyClaimerFor(HUTCHROK_BINDING),
   ...(drafter ? { drafter } : {}),
 });
 

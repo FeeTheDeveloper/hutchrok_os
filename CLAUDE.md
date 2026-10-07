@@ -55,10 +55,22 @@ hutchrok-os/
 ├── packages/approvals — Approval system (Levels A–D)
 ├── packages/audit     — Append-only audit log
 ├── packages/ai        — Provider-neutral AI gateway + model router
-├── packages/agents    — Agent runtime and 14 agent definitions
+├── packages/agents    — Agent runtime and 15 agent definitions
 ├── packages/mcp       — MCP server + tool registry + definitions
 ├── packages/connectors — Provider-neutral connector interfaces
+├── packages/activity  — Activity kernel ports + services (receipts/idempotency,
+│                        assignments, exception queue, schedules)
+├── packages/autopilot — Site Autopilot (email + site lane: classify, playbook,
+│                        draft, approve, beat)
+├── packages/auth      — Scaffold only (one-line stub)
+├── packages/knowledge — Scaffold only (one-line stub)
+├── packages/learning  — Scaffold only (one-line stub)
+├── packages/workflows — Scaffold only (one-line stub)
+├── packages/analytics — Scaffold only (one-line stub)
 ├── packages/shared    — Utilities (IDs, timestamps, env, Result type)
+├── infrastructure     — @hutchrok-os/db: Drizzle schema + migrations;
+│                        @hutchrok-os/db/stores: Postgres adapters for the
+│                        activity kernel ports
 └── config/business/hutchrok.kernel.ts — THE company kernel
 ```
 
@@ -179,11 +191,16 @@ When acting as Claude Engineering Agent (`claude-engineering`), Claude:
 
 **Phase 1 — Foundation** is in progress.
 
+> **Local note:** `pnpm` may not be on PATH. `corepack pnpm <cmd>` works, but
+> `turbo` shells out to `pnpm` and fails with "Unable to find package manager
+> binary" — so `pnpm build` / `pnpm typecheck` need pnpm on PATH proper. CI is
+> unaffected (it installs pnpm via `pnpm/action-setup`).
+
 Completed in this build:
 - Monorepo structure (pnpm workspaces + Turbo)
 - Company Kernel (types + loader + Hutchrok kernel config)
-- Core database schema (Drizzle ORM, PostgreSQL, 20+ tables)
-- Core domain models (all 42 required entities with Zod schemas)
+- Core database schema (Drizzle ORM, PostgreSQL, 37 tables) + initial migration
+- Core domain models (Zod schemas; core entities + activity kernel entities)
 - Veteran filing state machine (22 states, enforced transitions)
 - Event system (normalized envelope, 50+ event types, factory)
 - Audit service (append-oriented, in-memory sink for dev)
@@ -191,12 +208,28 @@ Completed in this build:
 - Approval system (Levels A–D, auto-approve A/B, human approval C/D)
 - AI Gateway (provider-neutral, OpenAI + Anthropic + Mock adapters)
 - Model router (config-driven profile → provider routing)
-- Agent runtime (14 agent definitions, authorization, audit)
-- MCP tool registry (30 tools across 10 namespaces, strongly typed)
+- Agent runtime (15 agent definitions, authorization, audit)
+- MCP tool registry (30 tools across 10 namespaces, strongly typed) — **26 of
+  the 30 handlers are still stubs returning `{ note: 'Wire up to …' }`**
 - Connector interfaces (Communications, Payments, Google Workspace, Website ingestion)
-- API server (Hono, health routes, event ingestion endpoint, webhook stubs)
-- Command Center (Next.js mobile-first scaffold)
-- Test suite (7 test files covering kernel, events, policies, approvals, state machine, MCP, agents)
+- Email connector (Resend + mock, HMAC and Svix signature verification)
+- Site Autopilot (`packages/autopilot`) — email/site lane end to end
+- Activity kernel (`packages/activity`) — provider receipts/idempotency,
+  assignments with evidence-gated completion, exception queue, leased schedules
+- Postgres adapters for all four kernel ports (`@hutchrok-os/db/stores`),
+  tested against real Postgres in-process via PGlite — including the
+  `ON CONFLICT`/`xmax` claim and the `FOR UPDATE SKIP LOCKED` schedule claim
+- One idempotency mechanism: the autopilot email/site lane claims dedupe keys
+  through `ProviderReceiptService`, sharing the receipts table with every
+  webhook (`AutopilotDeps.idempotency`)
+- ActivityEnvelope (extends EventEnvelope with tenant/company binding, channel,
+  data classification, evidence ref)
+- API server (Hono, health routes, event ingestion, site + autopilot routes,
+  signed provider webhooks)
+- Command Center (Next.js mobile-first scaffold — 3 files; no inbox/queues yet)
+- Test suite (15 test files, 185 tests; `tests/helpers/pg.ts` gives any test
+  real Postgres in-process, applying the committed migrations with drizzle's
+  own migrator — no Docker required)
 - CI/CD (GitHub Actions with build, test, preview, production gates)
 - Docker Compose for local development
 - Capability manifest (15 capabilities)
@@ -204,15 +237,19 @@ Completed in this build:
 - Complete documentation suite
 
 **Next Phase 2 targets:**
-- Drizzle database migration files
+- Telephony/SMS adapter for 214-447-1386 — **blocked**: provider not yet
+  selected (see the Autonomous Operations handoff, Section 18)
+- Consent/opt-out service over `ConsentRecord` (schema exists, no service yet)
+- `PgAutopilotStore` — threads, drafts, tasks, suppression and ack cooldown are
+  still in-memory (the activity kernel is Postgres-backed; autopilot is not)
+- Wire the 26 stub MCP handlers to real domain services
 - Supabase auth integration (`packages/auth`)
 - Knowledge store service (`packages/knowledge`)
 - Learning pipeline (`packages/learning`)
 - Workflow engine (`packages/workflows`)
 - Complete filing domain service
-- Stripe connector implementation
+- Stripe connector implementation (webhook boundary is in place; no handler)
 - Google Workspace connector implementation
-- `pnpm db:seed` with sample business data
 - Ask Hutchrok endpoint
 
 ---

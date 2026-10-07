@@ -1,0 +1,34 @@
+{
+  "name": "@hutchrok-os/db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hutchrok OS \u2014 Drizzle schema (core + activity kernel)",
+  "type": "module",
+  "main": "./dist/database/index.js",
+  "types": "./dist/database/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/database/index.js",
+      "types": "./dist/database/index.d.ts"
+    },
+    "./stores": {
+      "import": "./dist/stores/index.js",
+      "types": "./dist/stores/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Tests run from root\" && exit 0",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.33.0",
+    "@hutchrok-os/activity": "workspace:*",
+    "@hutchrok-os/domain": "workspace:*",
+    "@hutchrok-os/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

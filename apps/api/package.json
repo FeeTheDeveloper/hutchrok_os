@@ -29,13 +29,15 @@
     "@hutchrok-os/mcp": "workspace:*",
     "@hutchrok-os/connectors": "workspace:*",
     "@hutchrok-os/autopilot": "workspace:*",
+    "@hutchrok-os/activity": "workspace:*",
     "@hutchrok-os/config": "workspace:*",
     "hono": "^4.5.0",
     "@hono/node-server": "^1.13.0",
     "drizzle-orm": "^0.33.0",
     "postgres": "^3.4.0",
     "zod": "^3.23.0",
-    "dotenv": "^16.4.0"
+    "dotenv": "^16.4.0",
+    "@hutchrok-os/db": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

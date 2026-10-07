@@ -38,6 +38,79 @@ export const EventEnvelopeSchema = z.object({
 export type EventEnvelope = z.infer<typeof EventEnvelopeSchema>;
 
 // ─────────────────────────────────────────
+// ACTIVITY ENVELOPE
+//
+// Section 4 NORMALIZE: the common boundary across site, email, phone,
+// social, filing and scheduled work.
+//
+// This extends EventEnvelope rather than replacing it — every existing
+// producer and consumer keeps working, and an ActivityEnvelope is always a
+// valid EventEnvelope. The added fields are the ones the activity kernel
+// cannot route or authorize without:
+//
+//   tenant_id / company_id  — portfolio isolation (Section 12: deny when
+//                             the binding is unresolved)
+//   channel                 — which surface this arrived on
+//   data_classification     — gates model exposure (RESTRICTED/SECRET never)
+//   evidence_ref            — pointer to provider proof, never inline payload
+//   provider / provider_event_id — ties the activity back to its receipt
+// ─────────────────────────────────────────
+
+export const ActivityChannelSchema = z.enum([
+  'email',
+  'sms',
+  'voice',
+  'voicemail',
+  'website',
+  'website_chat',
+  'social',
+  'portal',
+  'scheduled',
+  'internal',
+]);
+export type ActivityChannel = z.infer<typeof ActivityChannelSchema>;
+
+export const ActivityDataClassificationSchema = z.enum([
+  'PUBLIC',
+  'INTERNAL',
+  'CONFIDENTIAL',
+  'RESTRICTED',
+  'SECRET',
+]);
+export type ActivityDataClassification = z.infer<typeof ActivityDataClassificationSchema>;
+
+export const ActivityEnvelopeSchema = EventEnvelopeSchema.extend({
+  tenant_id: z.string().min(1),
+  company_id: z.string().min(1),
+  channel: ActivityChannelSchema,
+  data_classification: ActivityDataClassificationSchema.default('INTERNAL'),
+  /** Pointer to provider evidence (receipt id, storage ref). Never the payload itself. */
+  evidence_ref: z.string().optional(),
+  provider: z.string().optional(),
+  provider_event_id: z.string().optional(),
+});
+
+export type ActivityEnvelope = z.infer<typeof ActivityEnvelopeSchema>;
+
+/** True when this envelope carries the activity-kernel fields. */
+export function isActivityEnvelope(e: EventEnvelope): e is ActivityEnvelope {
+  return ActivityEnvelopeSchema.safeParse(e).success;
+}
+
+/**
+ * Classifications that must never reach a model. Enforced by the policy
+ * engine; exposed here so the boundary can refuse before a call is built.
+ */
+export const MODEL_FORBIDDEN_CLASSIFICATIONS: readonly ActivityDataClassification[] = [
+  'RESTRICTED',
+  'SECRET',
+];
+
+export function isModelPermitted(c: ActivityDataClassification): boolean {
+  return !MODEL_FORBIDDEN_CLASSIFICATIONS.includes(c);
+}
+
+// ─────────────────────────────────────────
 // EVENT TAXONOMY
 // ─────────────────────────────────────────
 
@@ -107,6 +180,42 @@ export const EVENT_TYPES = [
   'autopilot.beat.tick',
   'autopilot.task.escalated',
 
+  // Activity kernel — ingestion boundary
+  'activity.received',
+  'activity.normalized',
+  'activity.duplicate_suppressed',
+  'webhook.received',
+  'webhook.replay_rejected',
+  'webhook.signature_invalid',
+
+  // Activity kernel — assignment
+  'assignment.created',
+  'assignment.started',
+  'assignment.blocked',
+  'assignment.completed',
+  'assignment.failed',
+
+  // Activity kernel — exception queue
+  'exception.raised',
+  'exception.acknowledged',
+  'exception.resolved',
+  'exception.dead_lettered',
+
+  // Activity kernel — schedules
+  'schedule.created',
+  'schedule.claimed',
+  'schedule.executed',
+  'schedule.failed',
+  'schedule.cancelled',
+
+  // Activity kernel — SLA
+  'sla.satisfied',
+  'sla.breached',
+
+  // Consent
+  'consent.granted',
+  'consent.revoked',
+
   // Appointment
   'appointment.created',
   'appointment.cancelled',
@@ -172,6 +281,43 @@ export function createEvent(opts: CreateEventOptions): EventEnvelope {
     metadata: opts.metadata ?? {},
     risk_level: opts.risk_level ?? 'LOW',
     schema_version: '1.0',
+  });
+}
+
+// ─────────────────────────────────────────
+// ACTIVITY FACTORY
+// ─────────────────────────────────────────
+
+export interface CreateActivityOptions extends CreateEventOptions {
+  tenant_id: string;
+  company_id: string;
+  channel: ActivityChannel;
+  data_classification?: ActivityDataClassification;
+  evidence_ref?: string;
+  provider?: string;
+  provider_event_id?: string;
+}
+
+/**
+ * Builds a normalized ActivityEnvelope. Throws if the tenant/company
+ * binding is missing — Section 12 requires denial, not a default.
+ */
+export function createActivity(opts: CreateActivityOptions): ActivityEnvelope {
+  if (!opts.tenant_id || !opts.company_id) {
+    throw new Error(
+      'Cannot normalize an activity without a resolved tenant/company binding.'
+    );
+  }
+
+  return ActivityEnvelopeSchema.parse({
+    ...createEvent(opts),
+    tenant_id: opts.tenant_id,
+    company_id: opts.company_id,
+    channel: opts.channel,
+    data_classification: opts.data_classification ?? 'INTERNAL',
+    evidence_ref: opts.evidence_ref,
+    provider: opts.provider,
+    provider_event_id: opts.provider_event_id,
   });
 }
 

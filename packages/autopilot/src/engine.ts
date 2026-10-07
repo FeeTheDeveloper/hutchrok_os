@@ -72,6 +72,18 @@ export interface ReplyDrafter {
   draft(input: DraftInput): Promise<string | null>;
 }
 
+/**
+ * Claims an idempotency key once. `AutopilotStore` satisfies this, and so
+ * does the activity kernel's `ProviderReceiptService` (via `keyClaimerFor`).
+ *
+ * Passing `idempotency` explicitly is how the OS ends up with one dedupe
+ * mechanism instead of two: the email and site lanes then share the same
+ * provider-receipt table as every webhook.
+ */
+export interface KeyClaimer {
+  claimKey(key: string): Promise<boolean>;
+}
+
 export interface EventPublisher {
   publish(event: EventEnvelope): Promise<void>;
 }
@@ -99,6 +111,12 @@ export interface AutopilotDeps {
   approvalStore: ApprovalStore;
   events?: EventPublisher;
   drafter?: ReplyDrafter;
+  /**
+   * Where dedupe keys are claimed. Defaults to `store` so existing callers and
+   * unit tests keep working; the API passes the activity kernel's receipt
+   * service so there is a single idempotency record for every channel.
+   */
+  idempotency?: KeyClaimer;
   now?: () => Date;
 }
 
@@ -145,10 +163,12 @@ interface StepContext {
 export class AutopilotEngine {
   readonly approvals: ApprovalService;
   private readonly events: EventPublisher;
+  private readonly keys: KeyClaimer;
   private readonly now: () => Date;
 
   constructor(private readonly deps: AutopilotDeps) {
     this.events = deps.events ?? new InMemoryEventPublisher();
+    this.keys = deps.idempotency ?? deps.store;
     this.now = deps.now ?? (() => new Date());
     this.approvals = new ApprovalService(deps.approvalStore, {
       onApproved: (a) => this.onApproved(a),
@@ -166,7 +186,7 @@ export class AutopilotEngine {
     const correlationId = generateCorrelationId();
     const run: AutopilotRun = { runId: generateId(), trigger: 'site_signal', correlationId, duplicate: false, actions: [] };
 
-    if (!(await this.deps.store.claimKey(`signal:${signal.signalId}`))) {
+    if (!(await this.keys.claimKey(`signal:${signal.signalId}`))) {
       run.duplicate = true;
       return run;
     }
@@ -257,7 +277,7 @@ export class AutopilotEngine {
     const run: AutopilotRun = { runId: generateId(), trigger: 'inbound_email', correlationId, duplicate: false, actions: [] };
 
     const dedupeKey = `email:${email.internetMessageId ?? email.providerMessageId}`;
-    if (!(await this.deps.store.claimKey(dedupeKey))) {
+    if (!(await this.keys.claimKey(dedupeKey))) {
       run.duplicate = true;
       return run;
     }

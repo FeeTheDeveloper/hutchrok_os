@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.8
+        version: 0.5.8
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.1
@@ -17,6 +20,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.0.0
         version: 8.68.0(eslint@9.39.5)(typescript@5.9.3)
+      drizzle-orm:
+        specifier: ^0.33.0
+        version: 0.33.0(@electric-sql/pglite@0.5.8)(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1)
       eslint:
         specifier: ^9.0.0
         version: 9.39.5
@@ -38,6 +44,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.0
         version: 1.19.17(hono@4.13.5)
+      '@hutchrok-os/activity':
+        specifier: workspace:*
+        version: link:../../packages/activity
       '@hutchrok-os/agents':
         specifier: workspace:*
         version: link:../../packages/agents
@@ -59,6 +68,9 @@ importers:
       '@hutchrok-os/connectors':
         specifier: workspace:*
         version: link:../../packages/connectors
+      '@hutchrok-os/db':
+        specifier: workspace:*
+        version: link:../../infrastructure
       '@hutchrok-os/domain':
         specifier: workspace:*
         version: link:../../packages/domain
@@ -82,7 +94,7 @@ importers:
         version: 16.6.1
       drizzle-orm:
         specifier: ^0.33.0
-        version: 0.33.0(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1)
+        version: 0.33.0(@electric-sql/pglite@0.5.8)(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1)
       hono:
         specifier: ^4.5.0
         version: 4.13.5
@@ -161,6 +173,47 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  infrastructure:
+    dependencies:
+      '@hutchrok-os/activity':
+        specifier: workspace:*
+        version: link:../packages/activity
+      '@hutchrok-os/domain':
+        specifier: workspace:*
+        version: link:../packages/domain
+      '@hutchrok-os/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
+      drizzle-orm:
+        specifier: ^0.33.0
+        version: 0.33.0(@electric-sql/pglite@0.5.8)(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1)
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+
+  packages/activity:
+    dependencies:
+      '@hutchrok-os/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@hutchrok-os/events':
+        specifier: workspace:*
+        version: link:../events
+      '@hutchrok-os/shared':
+        specifier: workspace:*
+        version: link:../shared
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.0.0
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/agents:
     dependencies:
@@ -507,6 +560,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
+  '@electric-sql/pglite@0.5.8':
+    resolution: {integrity: sha512-n9tsbUOhwx2epK1V0ZG9Ar4SHWUju04dhmzZXiSBXwBoleOvIfals33NAaWgagQVAL4Rbvx/Ptsu3P+pA09f6Q==}
 
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
@@ -2568,6 +2624,8 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
+  '@electric-sql/pglite@0.5.8': {}
+
   '@emnapi/runtime@1.11.3':
     dependencies:
       tslib: 2.8.1
@@ -3485,8 +3543,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.33.0(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1):
+  drizzle-orm@0.33.0(@electric-sql/pglite@0.5.8)(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1):
     optionalDependencies:
+      '@electric-sql/pglite': 0.5.8
       '@types/react': 18.3.31
       postgres: 3.4.9
       react: 18.3.1
