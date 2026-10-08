@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hutchrok-solutions-group",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "repository": "https://github.com/FeeTheDeveloper/hutchrok_os",
   "description": "Hutchrok business formation, filing document preparation, consulting, credit readiness, compliance, veteran services, housing, contracting and launch workflows.",
   "author": {

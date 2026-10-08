@@ -272,3 +272,27 @@ Completed in this build:
 6. Executing production deployments without Level C approval
 7. Making financial changes of any kind
 8. Modifying this file to expand Claude's own permissions
+
+---
+
+## Hutchrok Claude Integration
+
+Read `.claude/skills/hutchrok-doctrine/SKILL.md` for company operating doctrine
+(authority model, autonomous business factory, OS action lifecycle, approval
+levels, Claude engineering contract) and
+`.claude/skills/hutchrok-autonomous-business-pipeline/SKILL.md` for
+autonomous-company planning and GO/CONDITIONAL GO/HOLD/NO-GO assessments.
+
+These two skills are mirrored from `plugin/hutchrok-solutions-group/skills/`,
+which is the source of truth and holds the canonical specialist procedures
+(formation, EIN, filings, compliance, veteran services, contracting, launch
+services). `hutchrok-command` there holds the authoritative service-to-procedure
+routing table. `scripts/build_hutchrok_plugin.py` enforces SHA-256 parity
+between each mirror and its plugin copy, so edit the plugin copy and re-mirror —
+never only one side.
+
+These skill files add instructions only. They do not imply a live connector,
+agent runtime, agency connection, or background worker, and they do not grant
+Claude any authority beyond this file. The Escalation, Security
+Non-Negotiables, Approval Levels, and Prohibited Actions sections above remain
+in force and take precedence over any skill text.

@@ -15,12 +15,22 @@ IDENTITY = "hutchrok-solutions-group"
 REPOSITORY = "https://github.com/FeeTheDeveloper/hutchrok_os"
 REQUIRED_SKILLS = {
     "hutchrok-command",
+    "hutchrok-doctrine",
+    "hutchrok-autonomous-business-pipeline",
     "hutchrok-os-control-review",
     "hutchrok-os-signal-triage",
     "hutchrok-os-approval-review",
     "hutchrok-plugin-release",
     "host-workspace-operator",
 }
+# Skills mirrored into the repo's own .claude/skills so they are active while
+# working in this repository. The plugin copy is the source of truth; the build
+# refuses to package when a mirror has drifted from it.
+MIRRORED_SKILLS = {
+    "hutchrok-doctrine",
+    "hutchrok-autonomous-business-pipeline",
+}
+PROJECT_SKILLS = ROOT / ".claude" / "skills"
 FORBIDDEN_NAMES = {".env", ".env.local", "id_rsa", "id_ed25519", "credentials.json"}
 SECRET_MARKERS = (b"-----BEGIN PRIVATE KEY-----", b"-----BEGIN OPENSSH PRIVATE KEY-----")
 
@@ -32,16 +42,25 @@ def fail(message: str) -> None:
 def validate() -> list[Path]:
     manifest = json.loads((SOURCE / "plugin.json").read_text(encoding="utf-8"))
     overlay = json.loads((SOURCE / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
-    if manifest.get("name") != IDENTITY or overlay.get("name") != IDENTITY:
+    claude = json.loads((SOURCE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    if any(host.get("name") != IDENTITY for host in (manifest, overlay, claude)):
         fail("Plugin identity does not match the locked Hutchrok name")
-    if manifest.get("repository") != REPOSITORY or overlay.get("repository") != REPOSITORY:
+    if any(host.get("repository") != REPOSITORY for host in (manifest, overlay, claude)):
         fail("Plugin repository does not match the locked source")
     if not re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")):
         fail("Plugin version must be semver")
     if overlay.get("version") != manifest["version"]:
         fail("Portable and Codex manifest versions differ")
+    if claude.get("version") != manifest["version"]:
+        fail("Portable and Claude manifest versions differ")
+    if claude.get("description") != manifest.get("description") or claude.get("author") != manifest.get("author"):
+        fail("Portable and Claude manifest listings differ")
     if overlay.get("skills") != "./skills":
         fail("Codex manifest must declare the skills directory")
+    if claude.get("skills") != "./skills":
+        fail("Claude manifest must declare the skills directory")
+    if any(key in claude for key in ("mcpServers", "apps")):
+        fail("Skills-only Claude package must not declare an app or MCP server")
     overlay_interface = {key: value for key, value in overlay.get("interface", {}).items() if key != "capabilities"}
     if manifest.get("extensions", {}).get("com.openai", {}).get("interface") != overlay_interface:
         fail("Portable and Codex listing interfaces differ")
@@ -80,6 +99,15 @@ def validate() -> list[Path]:
             fail(f"Local user path in package: {relative}")
     if {path.name for path in (SOURCE / ".codex-plugin").iterdir()} != {"plugin.json"}:
         fail("Only plugin.json belongs in .codex-plugin")
+    if {path.name for path in (SOURCE / ".claude-plugin").iterdir()} != {"plugin.json"}:
+        fail("Only plugin.json belongs in .claude-plugin")
+    for name in sorted(MIRRORED_SKILLS):
+        mirror = PROJECT_SKILLS / name / "SKILL.md"
+        if not mirror.is_file():
+            fail(f"Mirrored skill missing from .claude/skills: {name}")
+        source_digest = hashlib.sha256((skill_root / name / "SKILL.md").read_bytes()).hexdigest()
+        if hashlib.sha256(mirror.read_bytes()).hexdigest() != source_digest:
+            fail(f"Mirrored skill has drifted from the plugin copy: {name}")
     return files
 
 
