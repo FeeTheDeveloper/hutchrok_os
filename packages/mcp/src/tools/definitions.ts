@@ -9,6 +9,11 @@
  */
 
 import { z } from 'zod';
+import {
+  OpportunitySearchSchema,
+  createGovConConnectorFromEnv,
+  type GovConOpportunityConnector,
+} from '@hutchrok-os/connectors';
 import type { MCPToolDefinition } from './registry.js';
 
 // ─────────────────────────────────────────
@@ -299,19 +304,32 @@ export const communicationsSendSms: MCPToolDefinition = {
 // GOVCON NAMESPACE
 // ─────────────────────────────────────────
 
+let govConConnector: GovConOpportunityConnector | undefined;
+
+/** Override the opportunity connector (tests, alternate providers). Pass undefined to reset to env. */
+export function setGovConConnector(connector: GovConOpportunityConnector | undefined): void {
+  govConConnector = connector;
+}
+
 export const govconSearchOpportunities: MCPToolDefinition = {
   name: 'search_opportunities',
   namespace: 'govcon',
-  description: 'Search SAM.gov and other sources for government contracting opportunities.',
-  inputSchema: z.object({
-    keywords: z.string().optional(),
-    naicsCode: z.string().optional(),
-    setAside: z.string().optional(),
+  description:
+    'Search SAM.gov Contract Opportunities (public API v2) by title keywords, NAICS, PSC, set-aside, notice type, state and dates. Read-only research leads; not an eligibility or bid decision.',
+  inputSchema: OpportunitySearchSchema.extend({
     limit: z.number().int().positive().max(50).default(10),
   }),
   riskLevel: 'LOW',
-  handler: async (_input, _ctx) => {
-    return { opportunities: [], note: 'Wire up to GovCon connector.' };
+  handler: async (input, ctx) => {
+    const connector = govConConnector ?? createGovConConnectorFromEnv();
+    const result = await connector.searchOpportunities(input);
+    return {
+      ...result,
+      businessId: ctx.businessId,
+      correlationId: ctx.correlationId,
+      note:
+        'Research leads only. Verify each notice, attachments and amendments on SAM.gov; run SDVOSB readiness before any set-aside claim. No bid, message or submission was made.',
+    };
   },
 };
 

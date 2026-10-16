@@ -55,3 +55,14 @@ Live work needs a secure owner-authorized session with the appropriate entity ro
 - https://certifications.sba.gov/ — current SBA certification entry reached through the official SBA link.
 
 Recheck applicable program rules and each actual solicitation before execution. The next implementation decision is the protected operator/connector mechanism, not changing documented business identity.
+
+## Implementation update — 2026-10-16: SAM.gov opportunity connector
+
+`govcon.search_opportunities` is no longer a stub. It calls the documented, read-only SAM.gov Get Opportunities Public API v2 (`https://api.sam.gov/opportunities/v2/search`) through `SamGovOpportunitiesConnector` in `packages/connectors/src/govcon.ts`.
+
+- **Credential:** `SAM_GOV_API_KEY` (public API key from the SAM.gov account profile). Unset → `NOT_CONFIGURED`, empty result, no invented data. The key is redacted from errors and never returned in the query echo.
+- **Filters:** title keywords, NAICS (`ncode`), PSC (`ccode`), set-aside code (`typeOfSetAside`, e.g. `SDVOSBC`, `SDVOSBS`, `VSA`, `SBA`), notice types (`ptype`), state, posted window (default last 30 days; SAM caps at one year) and open response deadlines.
+- **Output:** normalized notice ID, solicitation number, agency/office, notice type, posted date, response deadline as published (with offset), NAICS, PSC, set-aside, place of performance, contact, attachment count, SAM link, `retrievedAt`, provider and status. MCP adds `businessId`/`correlationId`.
+- **Local pull:** `SAM_GOV_API_KEY=… pnpm govcon:pull -- --set-aside SDVOSBC --open [--naics 541511]` writes JSON + Markdown registers to `.govcon/` (gitignored).
+- **Boundaries:** research leads only. No login, saved search, following, bid, message or submission. Run hutchrok-sdvosb-contracting before ranking or claiming SDVOSB eligibility; Hutchrok NAICS/size facts remain UNVERIFIED and must not be inferred.
+- **Verified:** unit tests with synthetic fixtures (query mapping, normalization, HTTP/network failure, key redaction, env selection, MCP routing). **Not verified:** a live SAM.gov call — the build session had no key and `api.sam.gov` was denied by the session network policy.
