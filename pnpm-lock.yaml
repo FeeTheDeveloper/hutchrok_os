@@ -429,6 +429,9 @@ importers:
       '@hutchrok-os/audit':
         specifier: workspace:*
         version: link:../audit
+      '@hutchrok-os/connectors':
+        specifier: workspace:*
+        version: link:../connectors
       '@hutchrok-os/domain':
         specifier: workspace:*
         version: link:../domain

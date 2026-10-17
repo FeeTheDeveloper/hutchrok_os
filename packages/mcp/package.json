@@ -25,6 +25,7 @@
     "@hutchrok-os/policies": "workspace:*",
     "@hutchrok-os/approvals": "workspace:*",
     "@hutchrok-os/audit": "workspace:*",
+    "@hutchrok-os/connectors": "workspace:*",
     "zod": "^3.23.0"
   },
   "devDependencies": {

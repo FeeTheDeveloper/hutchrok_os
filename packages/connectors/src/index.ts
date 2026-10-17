@@ -172,3 +172,4 @@ export class MockCommunicationsConnector implements CommunicationsConnector {
 // ─────────────────────────────────────────
 
 export * from './email.js';
+export * from './govcon.js';

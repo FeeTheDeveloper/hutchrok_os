@@ -47,3 +47,6 @@ pnpm-debug.log*
 # Docker
 docker-compose.override.yml
 next-env.d.ts
+
+# Local SAM.gov opportunity pulls (research registers)
+.govcon/
